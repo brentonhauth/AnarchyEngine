@@ -54,6 +54,6 @@ namespace AnarchyEngine.Util {
             return cloned.ToArray();
         }
 
-        public static T[] Wrap<T>(T item) => new T[] { item };
+        public static T[] Wrap<T>(T item) => new[] { item };
     }
 }

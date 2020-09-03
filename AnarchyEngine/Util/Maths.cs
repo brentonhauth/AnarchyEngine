@@ -79,8 +79,7 @@ namespace AnarchyEngine.Util {
             return new Vector3(
                 x: Cos(pitch) * Cos(yaw),
                 y: Sin(pitch),
-                z: Cos(pitch) * Sin(yaw)
-            );
+                z: Cos(pitch) * Sin(yaw));
         }
 
         public static T Cast<T>(object @object, T @default) {

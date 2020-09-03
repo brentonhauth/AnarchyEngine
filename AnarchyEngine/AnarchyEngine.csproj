@@ -66,10 +66,13 @@
     <Compile Include="DataTypes\_Vectors\Vector2.cs" />
     <Compile Include="DataTypes\_Vectors\Vector3.cs" />
     <Compile Include="DataTypes\_Vectors\Vector4.cs" />
+    <Compile Include="ECS\Components\Collider.cs" />
     <Compile Include="ECS\Components\Component.cs" />
     <Compile Include="ECS\Components\MeshFilter.cs" />
+    <Compile Include="ECS\Components\RigidBody.cs" />
     <Compile Include="ECS\Entity.cs" />
     <Compile Include="ECS\Transform.cs" />
+    <Compile Include="Physics\BBox.cs" />
     <Compile Include="Physics\PhysicsSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Mesh\IMesh.cs" />

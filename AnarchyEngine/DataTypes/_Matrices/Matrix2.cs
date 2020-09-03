@@ -22,6 +22,8 @@ namespace AnarchyEngine.DataTypes {
             }
         }
 
+        public Matrix2 Transposed => new Matrix2(Column0, Column1);
+
         public Vector2 Diagonal {
             get => new Vector2(M11, M22);
             set {

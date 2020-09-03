@@ -33,7 +33,7 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         public Vector2 UV;
 
-        public float[] Raw => new float[8] {
+        public float[] Raw => new[] {
             Position.X, Position.Y, Position.Z,
             Normal.X, Normal.Y, Normal.Z,
             UV.X, UV.Y

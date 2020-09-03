@@ -21,6 +21,8 @@ namespace AnarchyEngine.DataTypes {
             }
         }
 
+        public Matrix4 Transposed => new Matrix4(Column0, Column1, Column2, Column3);
+
         public Vector4 Diagonal {
             get => new Vector4(M11, M22, M33, M44);
             set {
@@ -90,7 +92,7 @@ namespace AnarchyEngine.DataTypes {
         public float M42 { get => Row3.Y; set => Row3.Y = value; }
         public float M43 { get => Row3.Z; set => Row3.Z = value; }
         public float M44 { get => Row3.W; set => Row3.W = value; }
-
+        
         public Matrix4(Vector4 row0, Vector4 row1, Vector4 row2, Vector4 row3) {
             Row0 = row0; Row1 = row1;
             Row2 = row2; Row3 = row3;
@@ -167,6 +169,7 @@ namespace AnarchyEngine.DataTypes {
         }
         public override int GetHashCode() => base.GetHashCode();
 
+        
         public static implicit operator OpenTK.Matrix4(Matrix4 m) => new OpenTK.Matrix4(m.Row0, m.Row1, m.Row2, m.Row3);
         public static implicit operator Matrix4(OpenTK.Matrix4 m) => new Matrix4(m.Row0, m.Row1, m.Row2, m.Row3);
 

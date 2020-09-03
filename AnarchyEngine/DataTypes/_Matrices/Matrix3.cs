@@ -1,4 +1,5 @@
 ﻿using System;
+using Jitter.LinearMath;
 
 namespace AnarchyEngine.DataTypes {
     public struct Matrix3 {
@@ -19,6 +20,8 @@ namespace AnarchyEngine.DataTypes {
             }
         }
 
+        public Matrix3 Transposed => new Matrix3(Column0, Column1, Column2);
+
         public Vector3 Diagonal {
             get => new Vector3(M11, M22, M33);
             set {
@@ -27,7 +30,7 @@ namespace AnarchyEngine.DataTypes {
                 M33 = value.Z;
             }
         }
-
+        
         public float Trace => M11 + M22 + M33;
 
 
@@ -126,7 +129,15 @@ namespace AnarchyEngine.DataTypes {
             }
         }
 
-
+        public static explicit operator Matrix3(Matrix4 m) => new Matrix3(m.Row0.Xyz, m.Row1.Xyz, m.Row2.Xyz);
+        public static implicit operator JMatrix(Matrix3 m) => new JMatrix(
+            m.M11, m.M12, m.M13,
+            m.M21, m.M22, m.M23,
+            m.M31, m.M32, m.M33);
+        public static implicit operator Matrix3(JMatrix m) => new Matrix3(
+            m.M11, m.M12, m.M13,
+            m.M21, m.M22, m.M23,
+            m.M31, m.M32, m.M33);
         public static implicit operator OpenTK.Matrix3(Matrix3 m) => new OpenTK.Matrix3(m.Row0, m.Row1, m.Row2);
         public static implicit operator Matrix3(OpenTK.Matrix3 m) => new Matrix3(m.Row0, m.Row1, m.Row2);
     }

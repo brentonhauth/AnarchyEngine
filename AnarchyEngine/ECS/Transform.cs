@@ -1,9 +1,7 @@
-﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using AnarchyEngine.DataTypes;
+using Quaternion = OpenTK.Quaternion;
+using Matrix4 = OpenTK.Matrix4;
 
 namespace AnarchyEngine.ECS {
     public sealed class Transform {

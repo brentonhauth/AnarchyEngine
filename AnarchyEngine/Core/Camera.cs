@@ -11,30 +11,21 @@ namespace AnarchyEngine.Core {
     public class Camera {
         private bool _firstMove = true;
         private Vector2 _lastPos;
-
-        // Those vectors are directions pointing outwards from the camera to define how it rotated
+        
         private Vector3 m_front = -Vector3.UnitZ,
                         m_up = Vector3.UnitY,
                         m_right = Vector3.UnitX;
-
-        // Rotation around the X axis (radians)
-        private float m_pitch;
-
-        // Rotation around the Y axis (radians)
-        // Without this you would be started rotated 90 degrees right
-        private float m_yaw = -MathHelper.PiOver2;
-
-        // The field of view of the camera (radians)
-        private float m_fov = MathHelper.PiOver2;
+        
+        private float m_pitch,
+            m_yaw = -MathHelper.PiOver2,
+            m_fov = MathHelper.PiOver2;
 
         public Camera(Vector3 position, float aspectRatio) {
             Position = position;
             AspectRatio = aspectRatio;
         }
 
-        // The position of the camera
         public Vector3 Position { get; set; }
-        // This is simply the aspect ratio of the viewport, used for the projection matrix
         public float AspectRatio { get; set; }
 
         public Vector3 Front => m_front;
@@ -52,9 +43,6 @@ namespace AnarchyEngine.Core {
         public float Pitch {
             get => MathHelper.RadiansToDegrees(m_pitch);
             set {
-                // We clamp the pitch value between -89 and 89 to prevent the camera from going upside down, and a bunch
-                // of weird "bugs" when you are using euler angles for rotation.
-                // If you want to read more about this you can try researching a topic called gimbal lock
                 var angle = MathHelper.Clamp(value, -89f, 89f);
                 m_pitch = MathHelper.DegreesToRadians(angle);
                 UpdateVectors();
@@ -70,9 +58,6 @@ namespace AnarchyEngine.Core {
             }
         }
 
-        // The field of view (FOV) is the vertical angle of the camera view, this has been discussed more in depth in a
-        // previous tutorial, but in this tutorial you have also learned how we can use this to simulate a zoom feature.
-        // We convert from degrees to radians as soon as the property is set to improve performance
         public float Fov {
             get => MathHelper.RadiansToDegrees(m_fov);
             set {
@@ -82,19 +67,16 @@ namespace AnarchyEngine.Core {
             }
         }
 
-        // Get the view matrix using the amazing LookAt function described more in depth on the web tutorials
         public Matrix4 GetViewMatrix() {
             return Matrix4.LookAt(Position, Position + m_front, m_up);
         }
-
-        // Get the projection matrix using the same method we have used up until this point
+        
         public Matrix4 GetProjectionMatrix() {
             Matrix4.CreatePerspectiveFieldOfView(m_fov, AspectRatio, .01f, 100f, out Matrix4 m);
             // Console.WriteLine("=========\n" + m);
             return m;
         }
 
-        // This function is going to update the direction vertices using some of the math learned in the web tutorials
         private void UpdateVectors() {
             //Game.SkyBox = ColorHelper.RandColor;
             // First the front matrix is calculated using some basic trigonometry
@@ -103,13 +85,7 @@ namespace AnarchyEngine.Core {
             //m_front.Z = Maths.Cos(m_pitch) * Maths.Sin(m_yaw);
 
             m_front = Maths.CalculateFront(m_pitch, m_yaw);
-
-            // We need to make sure the vectors are all normalized, as otherwise we would get some funky results
             m_front = Vector3.Normalize(m_front);
-
-            // Calculate both the right and the up vector using cross product
-            // Note that we are calculating the right from the global up, this behaviour might
-            // not be what you need for all cameras so keep this in mind if you do not want a FPS camera
             m_right = Vector3.Normalize(Vector3.Cross(m_front, Vector3.UnitY));
             m_up = Vector3.Normalize(Vector3.Cross(m_right, m_front));
         }
