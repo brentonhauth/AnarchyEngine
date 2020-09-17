@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 namespace AnarchyEngine.ECS.Components {
     public class MeshFilter : Component {
         public IMesh Mesh { get; set; }
+        public Material Material { get; set; }
+        public Shader Shader { get; set; }
 
         public MeshFilter() { }
         
@@ -20,18 +22,19 @@ namespace AnarchyEngine.ECS.Components {
 
         public override void Start() {
             Mesh.MeshFilter = this;
+            Material?.Init();
             Mesh.Init();
         }
 
         public override void Render() {
             Mesh.Render();
-            if (Mesh.Texture != null) {
+            /*if (Mesh.Texture != null) {
                 Renderer.Push(Mesh.Texture);
                 //Renderer.Push("texture0", 1);
-            }
-            Renderer.Push(Mesh.Shader, Mesh.VertexArray, Entity.Transform);
+            }*/
+            Renderer.Push(Mesh.Shader, Mesh.VertexArray, Material, Entity.Transform);
             var color = Color4.Gold;// Color4.FromXyz( Vector4.One );
-            Renderer.Push(Shader.ColorName, new OpenTK.Vector3(color.R, color.G, color.B));
+            //Renderer.Push(Shader.ColorName, new OpenTK.Vector3(color.R, color.G, color.B));
             Renderer.Submit();
         }
     }

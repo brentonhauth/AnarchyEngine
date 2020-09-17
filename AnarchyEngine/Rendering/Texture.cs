@@ -57,7 +57,7 @@ namespace AnarchyEngine.Rendering {
 
         public static TextureUnit UnitFromInt(int i) {
             const int magic = 0x84c0;
-            i = MathHelper.Clamp(i, 0, 31);
+            i = Maths.Clamp(i, 0, 31);
             return (TextureUnit)(i + magic);
         }
 

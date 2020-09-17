@@ -15,14 +15,11 @@ namespace AnarchyEngine.Rendering.Shaders {
         public const string ViewProjectionName = "uViewProjection";
         public const string ModelName = "uModel";
         public const string ColorName = "uColor";
+        
+        private const string _shaderLoc = "../AnarchyEngine/Rendering/Shaders/GLSL/";
 
-
-        private const string _shaderLoc = "Rendering/Shaders/GLSL/";
-
-        public static readonly Shader Flat =
-            new Shader(_shaderLoc + "flat.vert", _shaderLoc + "flat.frag");
-        public static readonly Shader Default =
-            new Shader(_shaderLoc + "shader.vert", _shaderLoc + "shader.frag");
+        public static readonly Shader Flat = new Shader($"{_shaderLoc}flat.vert", $"{_shaderLoc}flat.frag");
+        public static readonly Shader Default = new Shader($"{_shaderLoc}shader.vert", $"{_shaderLoc}shader.frag");
 
         public int Handle { get; private set; }
 
@@ -145,24 +142,6 @@ namespace AnarchyEngine.Rendering.Shaders {
             int location = GL.GetUniformLocation(Handle, name);
             UniformLocations.Add(name, location);
             return location;
-        }
-    }
-
-    struct ShaderLoadContext : IDisposable {
-        public string Path;
-        public int Program;
-        public ShaderType Type;
-
-        public void Compile() {
-        }
-
-        public void Create() {
-        }
-
-        public void Attach() {
-        }
-
-        public void Dispose() {
         }
     }
 }

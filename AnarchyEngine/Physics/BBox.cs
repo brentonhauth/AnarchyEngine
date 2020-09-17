@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnarchyEngine.DataTypes;
+﻿using AnarchyEngine.DataTypes;
 using Jitter.LinearMath;
 
 namespace AnarchyEngine.Physics {
     public struct BBox {
         public Vector3 Min, Max;
 
-        public Vector3[] Points => new[] {
+        public Vector3[] Vertices => new[] {
             Min,
             new Vector3(Max.X, Min.Y, Min.Z),
             new Vector3(Min.X, Max.Y, Min.Z),

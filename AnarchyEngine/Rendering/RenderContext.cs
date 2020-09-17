@@ -9,16 +9,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AnarchyEngine.Rendering {
-    public struct RenderContext {
+    internal struct RenderContext {
         public Matrix4 Transform { get; set; }
+        public Matrix4 ViewProjection { get; set; }
         public VertexArray VertexArray { get; set; }
         public Texture Texture { get; set; }
         public Shader Shader { get; set; }
-        public Matrix4 ViewProjection { get; set; }
+        public Material Material { get; set; }
         public Dictionary<string, RenderContextExtra> Extras;
     }
 
-    public struct RenderContextExtra {
+    internal struct RenderContextExtra {
         public ActiveUniformType Type;
         public dynamic Data;
 

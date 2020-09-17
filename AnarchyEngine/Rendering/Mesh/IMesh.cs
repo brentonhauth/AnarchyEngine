@@ -1,11 +1,6 @@
 ﻿using AnarchyEngine.ECS.Components;
 using AnarchyEngine.Rendering.Shaders;
 using AnarchyEngine.Rendering.Vertices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AnarchyEngine.Rendering.Mesh {
     public interface IMesh {

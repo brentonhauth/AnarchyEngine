@@ -67,6 +67,12 @@ namespace AnarchyEngine.DataTypes {
             return (AB - proj).Magnitude;
         }
         public static float Distance(Vector2 a, Vector2 b) => (a - b).Magnitude;
+        public static float DistanceSquared(Vector2 point, Vector2 lineStart, Vector2 lineEnd) {
+            Vector2 AP = lineStart - point,
+                AB = lineEnd - lineStart,
+                proj = Projection(AP, AB); // Projection of AP on AB
+            return (AB - proj).MagnitudeSquared;
+        }
         public static float DistanceSquared(Vector2 a, Vector2 b) => (a - b).MagnitudeSquared;
 
         public static float Dot(Vector2 u, Vector2 v) {

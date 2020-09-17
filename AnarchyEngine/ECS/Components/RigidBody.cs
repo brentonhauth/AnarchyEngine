@@ -11,6 +11,7 @@ using Jitter.LinearMath;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using JRigidBody = Jitter.Dynamics.RigidBody;
+using AnarchyEngine.Rendering.Mesh;
 
 namespace AnarchyEngine.ECS.Components {
     public class RigidBody : Component {
@@ -27,23 +28,38 @@ namespace AnarchyEngine.ECS.Components {
             get => Body.Mass;
             set => Body.Mass = value;
         }
-
+        
         public bool IsStatic {
             get => Body.IsStatic;
             set => Body.IsStatic = value;
         }
 
+        public bool IsActive {
+            get => Body.IsActive;
+            set => Body.IsActive = value;
+        }
+
+        public bool AffectedByGravity {
+            get => Body.AffectedByGravity;
+            set => Body.AffectedByGravity = value;
+        }
+
+        public DataTypes.Vector3 Velocity {
+            get => Body.LinearVelocity;
+            set => Body.LinearVelocity = value;
+        }
 
         public RigidBody(float mass, bool isPlane = false) : base() {
             //var c = Entity?.GetComponent<Collider>();
             var s = // c?.Shape ?? 
-                (IsPlane ? TestingPlaneShape : new BoxShape(JVector.One));
+                ((IsPlane=isPlane) ? TestingPlaneShape : new BoxShape(JVector.One));
             Body = new JRigidBody(s);
             Mass = mass;
             IsPlane = isPlane;
+            Body.AffectedByGravity = false;
         }
 
-        public RigidBody() : this(1f) { }
+        public RigidBody() : this(100f) { }
 
         ~RigidBody() => Dispose();
 
@@ -53,13 +69,14 @@ namespace AnarchyEngine.ECS.Components {
             var transform = Entity.Transform;
             var rotation = transform.Rotation;
 
-            Body.Material = new Material {
-                KineticFriction = Maths.RandRange(.5f),
-                Restitution = Maths.RandRange(.5f),
-                StaticFriction = Maths.RandRange(.5f)
-            };
+            /*Body.Material = new Material {
+                KineticFriction = 0,//float.MaxValue,//Maths.RandRange(500f, 1000f),
+                Restitution = 0,//float.MaxValue,
+                StaticFriction = 0,//float.MaxValue,//Maths.RandRange(500f, 1000f)
+            };*/
 
-            
+            Body.Material.Restitution = 0f;
+            Body.Material.KineticFriction = 1f;
 
             DataTypes.Matrix4 orientation = Matrix4.CreateFromQuaternion(rotation);
 
@@ -68,37 +85,42 @@ namespace AnarchyEngine.ECS.Components {
                 transform.Position;
             //Body.DebugDraw(drawer);
             //Body.EnableDebugDraw = true;
-            Body.Mass = Mass;
             IsStatic = IsPlane;
+            //Body.IsActive = false;
+            // if (!IsStatic) Body.LinearVelocity = new DataTypes.Vector3(.0001f);
             PhysicsSystem.Add(Body);
         }
 
-        private void TransformListener(Transform.UpdateFactor factor) {
-            const Transform.UpdateFactor
-                pos = Transform.UpdateFactor.Position,
-                rot = Transform.UpdateFactor.Rotation,
-                scl = Transform.UpdateFactor.Scale;
-
-            if ((factor & pos) == pos) {
-
-            }
-
-            if ((factor & rot) == rot) {
-
-            }
-
-            if ((factor & scl) == scl) {
-
-            }
+        #region Event Listeners
+        private void UpdatePositionListener(DataTypes.Vector3 position) {
+            Body.Position = position;
         }
 
-        public override void Render() {
-            DataTypes.Matrix3 rotation = Body.Orientation;
-            DataTypes.Vector3 position = Body.Position;
+        private void UpdateRotationListener(Quaternion rotation) {
+            DataTypes.Matrix4 mat = Matrix4.CreateFromQuaternion(rotation);
+            Body.Orientation = (DataTypes.Matrix3)mat;
+        }
 
-            var model = new Matrix4(rotation)
-                * Matrix4.CreateTranslation(position);
-            drawer.Draw(model);
+        private void AddedComponentListener(Component comp) {
+            if (comp is RigidBody && comp.Id != Id) {
+                throw new Exception();
+            } else if (!(comp is Collider)) {
+                return;
+            }
+
+            var collider = comp as Collider;
+            Body.Shape = collider.Shape;
+        }
+        #endregion
+        
+        public override void Render() {
+            DataTypes.Matrix3 orientation = Body.Orientation;
+            DataTypes.Vector3 position = Body.Position;
+            
+            var rotation = new Matrix4(orientation);
+            var model = rotation * Matrix4.CreateTranslation(position);
+            
+            //if (!IsPlane) drawer.Draw(model);
         }
 
         public override void Update() {
@@ -110,16 +132,20 @@ namespace AnarchyEngine.ECS.Components {
             var transform = Entity.Transform;
 
             transform.SetPositionSilently(position);
-            transform.SetRotationSilently(Quaternion.FromMatrix(rotation));
+            transform.SetRotationSilently(Quaternion.FromMatrix(rotation.Transposed));
         }
 
         public override void AppendTo(Entity e) {
-            e.Transform.OnUpdate += TransformListener;
+            e.Events.UpdatePosition += UpdatePositionListener;
+            e.Events.UpdateRotation += UpdateRotationListener;
+            e.Events.AddedComponent += AddedComponentListener;
             base.AppendTo(e);
         }
 
         public override void Dispose() {
-            Entity.Transform.OnUpdate -= TransformListener;
+            Entity.Events.UpdatePosition -= UpdatePositionListener;
+            Entity.Events.UpdateRotation -= UpdateRotationListener;
+            Entity.Events.AddedComponent -= AddedComponentListener;
             if (Body != null) {
                 PhysicsSystem.Remove(Body);
             }
@@ -133,6 +159,7 @@ namespace AnarchyEngine.ECS.Components {
     }
 
     public class DebugDrawer {
+
         Shader Shader;
         VertexArray VertexArray;
         private bool initialized = false;
@@ -145,23 +172,20 @@ namespace AnarchyEngine.ECS.Components {
 
         public void Init() {
             if (initialized) return; else initialized = true;
-
-            //VertexArray.AddData(Program.cubeVertices);
-
-            Shader.Init();
-            VertexArray.Init();
-
-
+            Shader.Default.Init();
+            Mesh.Cube.Init();
         }
 
         public void Draw(Matrix4 model) {
-            VertexArray.Bind();
-            Shader.Use();
-            Shader.SetVector3(Shader.ColorName, new Vector3(1, 1, 0));
-            Shader.SetMatrix4(Shader.ViewProjectionName, Core.World.MainCamera.ViewProjection);
-            Shader.SetMatrix4(Shader.ModelName, model);
+            var shader = Shader.Default;
+            var va = Mesh.Cube.VertexArray;
+            va.Bind();
+            shader.Use();
+            shader.SetVector3(Shader.ColorName, new Vector3(1, 1, 0));
+            shader.SetMatrix4(Shader.ViewProjectionName, Core.World.MainCamera.ViewProjection);
+            shader.SetMatrix4(Shader.ModelName, model);
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            GL.DrawArrays(PrimitiveType.LineLoop, 0, 36);
         }
 
         public void DrawLine(JVector start, JVector end) {

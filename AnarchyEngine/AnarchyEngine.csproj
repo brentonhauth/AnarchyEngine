@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
@@ -59,7 +61,10 @@
     <Compile Include="Core\Time.cs" />
     <Compile Include="Core\Window.cs" />
     <Compile Include="Core\World.cs" />
+    <Compile Include="DataTypes\Color.cs" />
     <Compile Include="DataTypes\Pool.cs" />
+    <Compile Include="DataTypes\Updatable.cs" />
+    <Compile Include="DataTypes\_Matrices\ISquareMatrix.cs" />
     <Compile Include="DataTypes\_Matrices\Matrix2.cs" />
     <Compile Include="DataTypes\_Matrices\Matrix3.cs" />
     <Compile Include="DataTypes\_Matrices\Matrix4.cs" />
@@ -73,8 +78,10 @@
     <Compile Include="ECS\Entity.cs" />
     <Compile Include="ECS\Transform.cs" />
     <Compile Include="Physics\BBox.cs" />
+    <Compile Include="Physics\Geometry.cs" />
     <Compile Include="Physics\PhysicsSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\Material.cs" />
     <Compile Include="Rendering\Mesh\IMesh.cs" />
     <Compile Include="Rendering\Mesh\Mesh.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
@@ -91,6 +98,10 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Rendering\Shaders\GLSL\flat.frag" />
+    <None Include="Rendering\Shaders\GLSL\flat.vert" />
+    <None Include="Rendering\Shaders\GLSL\shader.frag" />
+    <None Include="Rendering\Shaders\GLSL\shader.vert" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

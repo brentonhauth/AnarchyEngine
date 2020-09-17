@@ -11,6 +11,8 @@ namespace AnarchyEngine.Util {
 
         public static readonly Random Rng = new Random(Time.EpochNow);
 
+        public static int Clamp(int n, int min, int max) => Math.Max(min, Math.Min(n, max));
+        public static float Clamp(float n, float min, float max) => Math.Max(min, Math.Min(n, max));
 
         public static bool WithinRange(Vector3 v, Vector3 u, float range = 1f) {
             return Vector3.DistanceSquared(v, u) <= range * range;

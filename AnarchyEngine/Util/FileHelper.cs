@@ -4,11 +4,12 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using AnarchyEngine.Rendering.Vertices;
+using System.Text.RegularExpressions;
 
 namespace AnarchyEngine.Util {
     public static class FileHelper {
-        public static readonly string Path =
-            AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug\", "");
+        public static readonly string Path = Regex.Replace(
+            AppDomain.CurrentDomain.BaseDirectory, @"bin\\(Debug|Release)\\?$", string.Empty);
 
 
         public static IEnumerable<Vertex> LoadFbx(string filename) {

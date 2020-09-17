@@ -8,9 +8,13 @@ namespace AnarchyEngine.ECS.Components {
     public interface ISingleComponent { }
 
     public class Component : IDisposable {
+        private static uint IdCount = 0;
+
+        public readonly uint Id;
+
         public Entity Entity { get; internal set; }
 
-        public Component() { }
+        public Component() { Id = ++IdCount; }
 
         public virtual void Init() { }
 

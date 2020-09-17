@@ -71,15 +71,26 @@ namespace AnarchyEngine.DataTypes {
         #endregion
 
         #region Vector3 Methods
+        public static Vector3 Random(float min, float max) {
+            return new Vector3(
+                x: Maths.RandRange(min, max),
+                y: Maths.RandRange(min, max),
+                z: Maths.RandRange(min, max));
+        }
+
         public static float Distance(Vector3 point, Vector3 lineStart, Vector3 lineEnd) {
             Vector3 AP = lineStart - point,
-                AB = lineEnd - lineStart;
-
-            var proj = Projection(AP, AB); // Projection of AP on AB
-
+                AB = lineEnd - lineStart,
+                proj = Projection(AP, AB); // Projection of AP on AB
             return (AB - proj).Magnitude;
         }
         public static float Distance(Vector3 u, Vector3 v) => (u - v).Magnitude;
+        public static float DistanceSquared(Vector3 point, Vector3 lineStart, Vector3 lineEnd) {
+            Vector3 AP = lineStart - point,
+                AB = lineEnd - lineStart,
+                proj = Projection(AP, AB); // Projection of AP on AB
+            return (AB - proj).MagnitudeSquared;
+        }
         public static float DistanceSquared(Vector3 u, Vector3 v) => (u - v).MagnitudeSquared;
 
         public static float Dot(Vector3 u, Vector3 v) {
@@ -99,13 +110,11 @@ namespace AnarchyEngine.DataTypes {
             double acos = Math.Acos(Dot(u, v) / magx);
             return (float)(180.0 / Math.PI * acos);
         }
-
-
+        
         public Vector3 Projection(Vector3 against) => Projection(this, against);
         public static Vector3 Projection(Vector3 self, Vector3 against) {
             return Dot(against, self) / against.MagnitudeSquared * against;
         }
-
         #endregion
 
         #region Vector3 Operators

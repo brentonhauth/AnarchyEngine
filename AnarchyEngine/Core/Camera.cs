@@ -6,16 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vector3 = AnarchyEngine.DataTypes.Vector3;
 
 namespace AnarchyEngine.Core {
     public class Camera {
         private bool _firstMove = true;
         private Vector2 _lastPos;
-        
-        private Vector3 m_front = -Vector3.UnitZ,
-                        m_up = Vector3.UnitY,
-                        m_right = Vector3.UnitX;
-        
         private float m_pitch,
             m_yaw = -MathHelper.PiOver2,
             m_fov = MathHelper.PiOver2;
@@ -28,28 +24,26 @@ namespace AnarchyEngine.Core {
         public Vector3 Position { get; set; }
         public float AspectRatio { get; set; }
 
-        public Vector3 Front => m_front;
-        public Vector3 Up => m_up;
-        public Vector3 Right => m_right;
+        public Vector3 Right { get; private set; } = Vector3.UnitX;
+        public Vector3 Up { get; private set; } = Vector3.UnitY;
+        public Vector3 Front { get; private set; } = -Vector3.UnitZ;
 
         public Matrix4 View =>
-            Matrix4.LookAt(Position, Position + m_front, m_up);
+            Matrix4.LookAt(Position, Position + Front, Up);
         public Matrix4 Projection =>
             Matrix4.CreatePerspectiveFieldOfView(m_fov, AspectRatio, .01f, 100f);
 
         public Matrix4 ViewProjection => View * Projection;
 
-        // We convert from degrees to radians as soon as the property is set to improve performance
         public float Pitch {
             get => MathHelper.RadiansToDegrees(m_pitch);
             set {
-                var angle = MathHelper.Clamp(value, -89f, 89f);
+                var angle = Maths.Clamp(value, -89f, 89f);
                 m_pitch = MathHelper.DegreesToRadians(angle);
                 UpdateVectors();
             }
         }
-
-        // We convert from degrees to radians as soon as the property is set to improve performance
+        
         public float Yaw {
             get => MathHelper.RadiansToDegrees(m_yaw);
             set {
@@ -61,19 +55,18 @@ namespace AnarchyEngine.Core {
         public float Fov {
             get => MathHelper.RadiansToDegrees(m_fov);
             set {
-                var angle = MathHelper.Clamp(value, 1f, 45f);
+                var angle = Maths.Clamp(value, 1f, 45f);
                 m_fov = MathHelper.DegreesToRadians(angle);
                 UpdateVectors();
             }
         }
 
         public Matrix4 GetViewMatrix() {
-            return Matrix4.LookAt(Position, Position + m_front, m_up);
+            return Matrix4.LookAt(Position, Position + Front, Up);
         }
         
         public Matrix4 GetProjectionMatrix() {
             Matrix4.CreatePerspectiveFieldOfView(m_fov, AspectRatio, .01f, 100f, out Matrix4 m);
-            // Console.WriteLine("=========\n" + m);
             return m;
         }
 
@@ -84,10 +77,10 @@ namespace AnarchyEngine.Core {
             //m_front.Y = Maths.Sin(m_pitch);
             //m_front.Z = Maths.Cos(m_pitch) * Maths.Sin(m_yaw);
 
-            m_front = Maths.CalculateFront(m_pitch, m_yaw);
-            m_front = Vector3.Normalize(m_front);
-            m_right = Vector3.Normalize(Vector3.Cross(m_front, Vector3.UnitY));
-            m_up = Vector3.Normalize(Vector3.Cross(m_right, m_front));
+            Front = Maths.CalculateFront(m_pitch, m_yaw);
+            Front = Front.Normalized;
+            Right = Vector3.Cross(Front, Vector3.UnitY).Normalized;
+            Up = Vector3.Cross(Right, Front).Normalized;
         }
 
         public void Start() {

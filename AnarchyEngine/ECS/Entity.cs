@@ -1,4 +1,5 @@
 ﻿using AnarchyEngine.Core;
+using AnarchyEngine.DataTypes;
 using AnarchyEngine.ECS.Components;
 using System;
 using System.Collections.Generic;
@@ -11,20 +12,23 @@ namespace AnarchyEngine.ECS {
 
         private static uint IdCount = 0;
 
-        private static List<Entity> AllEntities; // Remove (?)
-
+        private static readonly List<Entity> AllEntities; // Remove (?)
+        
 
         public readonly uint Id;
 
-        private List<Component> Components { get; }
+        private readonly List<Component> Components;
 
-        private List<Entity> Children { get; }
+        private readonly List<Entity> Children;
 
         public string Name { get; set; }
 
         public Entity Parent { get; private set; }
 
         public Transform Transform { get; }
+        
+        internal EntityEvents Events { get; }
+
 
         static Entity() {
             AllEntities = new List<Entity>(0);
@@ -37,7 +41,8 @@ namespace AnarchyEngine.ECS {
             Name = name;
             Components = new List<Component>();
             Children = new List<Entity>();
-            Transform = new Transform();
+            Events = new EntityEvents();
+            Transform = new Transform(this);
             AllEntities.Add(this);
         }
 
@@ -57,22 +62,18 @@ namespace AnarchyEngine.ECS {
             }
             component.Entity = this;
             component.AppendTo(this);
+            Events.RaiseAddedComponent(component);
             Components.Add(component);
         }
 
         public T AddComponent<T>() where T : Component {
-
-            //Type type = typeof(T);
-            /*if (T is ISingleComponent) {
-                foreach (Component comp in Components) {
-                    if (type.IsInstanceOfType(comp)) {
-                        throw new Exception();
-                    }
-                }
-            }*/
+            if (typeof(T) == typeof(Component)) {
+                throw new Exception();
+            }
             T component = Activator.CreateInstance<T>();
             component.AppendTo(this);
             Components.Add(component);
+            Events.RaiseAddedComponent(component);
             return component;
         }
 
@@ -96,7 +97,7 @@ namespace AnarchyEngine.ECS {
 
         public bool HasChildWithName(string name, out Entity child, bool deep = false) {
             child = FindChildByName(name, deep);
-            return child != null;
+            return child;
         }
 
         public IEnumerable<Entity> FlattenWithChildren() {
@@ -146,5 +147,22 @@ namespace AnarchyEngine.ECS {
         }
 
         public static implicit operator bool(Entity entity) => entity != null;
+
+        #region EntityEvents
+        internal class EntityEvents {
+            internal event Action<Component> AddedComponent;
+            internal event Action<Vector3> UpdatePosition;
+            internal event Action<Vector3> UpdateScale;
+            internal event Action<OpenTK.Quaternion> UpdateRotation;
+
+            internal EntityEvents() { }
+
+            internal void RaiseAddedComponent(Component c) => AddedComponent?.Invoke(c);
+            internal void RaiseUpdatePosition(ref Vector3 p) => UpdatePosition?.Invoke(p);
+            internal void RaiseUpdateScale(ref Vector3 s) => UpdatePosition?.Invoke(s);
+            internal void RaiseUpdateRotation(ref OpenTK.Quaternion q) => UpdateRotation?.Invoke(q);
+        }
+        #endregion
     }
+
 }

@@ -11,6 +11,7 @@ namespace AnarchyEngine.Core {
         
         internal Window(string title, int width, int height) : base(width, height, GraphicsMode.Default, title) {
             X = Y = 30;
+            WindowState = WindowState.Fullscreen;
             World.MainCamera = new Camera(Vector3.One * .25f, (float)width / height);
         }
 
@@ -24,7 +25,7 @@ namespace AnarchyEngine.Core {
             World.Start();
 
             CursorVisible = false;
-
+            
             base.OnLoad(e);
         }
 
@@ -50,10 +51,10 @@ namespace AnarchyEngine.Core {
         protected override void OnUpdateFrame(FrameEventArgs e) {
             PreUpdate(e);
             // ...
-            World.Update();
             PhysicsSystem.Update();
+            World.Update();
 
-            //JitterWorld.Step((float)e.Time, true);
+            /*<temp>*/ if (Input.IsKeyPressed(Key.Escape)) Exit();
 
             base.OnUpdateFrame(e);
         }

@@ -12,11 +12,10 @@ using System.Threading.Tasks;
 
 namespace AnarchyEngine.Rendering {
     public static class Renderer {
-        public static RenderContext Context;
         public static Camera Camera { get; private set; }
         public static Entity CurrentEntity { get; private set; }
-        private static RenderContext CurrentContext;
-        public static Queue<RenderContext> Contexts;
+        private static RenderContext CurrentContext, Context;
+        private static Queue<RenderContext> Contexts;
 
         public static void Init() {
             Context = new RenderContext();
@@ -41,17 +40,18 @@ namespace AnarchyEngine.Rendering {
         }
 
         public static void Push(Shader shader, VertexArray va) {
-            Push(shader, va, (Matrix4)CurrentEntity.Transform);
+            Push(shader, va, Material.Default, (Matrix4)CurrentEntity.Transform);
         }
 
-        public static void Push(Shader shader, VertexArray va, Transform transform) {
-            Push(shader, va, (Matrix4)transform);
+        public static void Push(Shader shader, VertexArray va, Material material, Transform transform) {
+            Push(shader, va, material, (Matrix4)transform);
         }
 
-        public static void Push(Shader shader, VertexArray va, Matrix4 transform) {
+        public static void Push(Shader shader, VertexArray va, Material material, Matrix4 transform) {
             CurrentContext.Shader = shader;
             CurrentContext.VertexArray = va;
             CurrentContext.Transform = transform;
+            CurrentContext.Material = material;
             CurrentContext.ViewProjection = Context.ViewProjection;
         }
 
@@ -77,13 +77,16 @@ namespace AnarchyEngine.Rendering {
                 Shader shader = ctx.Shader;
                 VertexArray va = ctx.VertexArray;
 
-                ctx.Texture?.Use();
+                ctx.Texture?.Use();//temp
                 va.Bind();
                 shader.Use();
+                //<temp>
                 shader.SetVector3("viewPos", World.MainCamera.Front);
                 shader.SetVector3("lightPos", World.MainCamera.Position);
+                //</temp>
                 shader.SetMatrix4(Shader.ModelName, ctx.Transform);
                 shader.SetMatrix4(Shader.ViewProjectionName, ctx.ViewProjection);
+                ctx.Material?.ApplyToShader(shader);
                 if (ctx.Extras != null) {
                     foreach (var extra in ctx.Extras) {
                         var value = extra.Value;
