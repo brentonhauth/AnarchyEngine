@@ -51,7 +51,9 @@ namespace AnarchyRunner {
             planeEntity.AddComponent(new MeshFilter(planeMesh));
             planeEntity.Transform.Position = new Vector3(0f, -1f, 0f);
             planeEntity.Transform.Scale = new Vector3(50f, 1, 50f);
-            planeEntity.AddComponent(new RigidBody(1f, true));
+            planeEntity.AddComponent<EmptyRigidBody>();
+            var planeBC = planeEntity.AddComponent<BoxCollider>();
+            planeBC.Size = planeEntity.Transform.Scale;
             scene.Add(planeEntity);
 
             for (int i = 0; i < 15; i++) {
@@ -74,13 +76,13 @@ namespace AnarchyRunner {
                 if (i == 0) {
                     rb.AffectedByGravity = true;
                 }
-                rb.IsActive = true;
+                rb.IsBodyActive = true;
                 scene.Add(entity);
             }
 
             Entity testEntity = new Entity();
             var testrb = testEntity.AddComponent<RigidBody>();
-            testrb.IsActive = true;
+            testrb.IsBodyActive = true;
             scene.Add(testEntity);
             scene.Add(new Updatable {
                 OnUpdate = () => {
@@ -110,7 +112,8 @@ namespace AnarchyRunner {
             planeEntity.AddComponent(new MeshFilter(planeMesh));
             planeEntity.Transform.Position = new Vector3(0f, -1f, 0f);
             planeEntity.Transform.Scale = new Vector3(50f, 1, 50f);
-            planeEntity.AddComponent(new RigidBody(1f, true));
+            planeEntity.AddComponent<EmptyRigidBody>();
+            planeEntity.AddComponent<BoxCollider>().Size = planeEntity.Transform.Scale;
             scene.Add(planeEntity);
 
             //for (int i = 0; i < 15; i++) {
@@ -129,9 +132,7 @@ namespace AnarchyRunner {
 
             scene.Add(new Updatable {
                 OnUpdate = () => {
-
-                    // testEntity.Transform.Position = World.MainCamera.Position;
-
+                    
                     if (Input.IsKeyPressed(Key.F)) {
                         var cam = World.MainCamera;
                         var entity = AddBox((1.1f * cam.Front) + cam.Position, cam.Front * 5f);
@@ -157,12 +158,13 @@ namespace AnarchyRunner {
             Entity entity = new Entity();
             var mf = entity.AddComponent<MeshFilter>();
             var rb = entity.AddComponent<RigidBody>();
+            var bc = entity.AddComponent<BoxCollider>();
             mf.Mesh = Mesh.Cube;
             if (velocity != Vector3.Zero) {
-                rb.IsActive = true;
+                rb.IsBodyActive = true;
                 rb.Velocity = velocity;
             } else {
-                rb.IsActive = false;
+                rb.IsBodyActive = false;
             }
             rb.Mass = 100f;
             rb.AffectedByGravity = true;

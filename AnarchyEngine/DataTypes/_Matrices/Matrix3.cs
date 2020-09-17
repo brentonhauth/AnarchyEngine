@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jitter.LinearMath;
 
 namespace AnarchyEngine.DataTypes {
@@ -128,6 +129,18 @@ namespace AnarchyEngine.DataTypes {
                 default: throw new IndexOutOfRangeException();
             }
         }
+        
+        public static bool operator ==(Matrix3 left, Matrix3 right) {
+            return left.Row0 == right.Row0 &&
+                   left.Row1 == right.Row1 &&
+                   left.Row2 == right.Row2;
+        }
+
+        public static bool operator !=(Matrix3 left, Matrix3 right) {
+            return left.Row0 != right.Row0 ||
+                   left.Row1 != right.Row1 ||
+                   left.Row2 != right.Row2;
+        }
 
         public static explicit operator Matrix3(Matrix4 m) => new Matrix3(m.Row0.Xyz, m.Row1.Xyz, m.Row2.Xyz);
         public static implicit operator JMatrix(Matrix3 m) => new JMatrix(
@@ -140,5 +153,25 @@ namespace AnarchyEngine.DataTypes {
             m.M31, m.M32, m.M33);
         public static implicit operator OpenTK.Matrix3(Matrix3 m) => new OpenTK.Matrix3(m.Row0, m.Row1, m.Row2);
         public static implicit operator Matrix3(OpenTK.Matrix3 m) => new Matrix3(m.Row0, m.Row1, m.Row2);
+
+        public override bool Equals(object obj) {
+            if (!(obj is Matrix3)) {
+                return false;
+            }
+
+            var matrix = (Matrix3)obj;
+            return EqualityComparer<Vector3>.Default.Equals(Row0, matrix.Row0) &&
+                   EqualityComparer<Vector3>.Default.Equals(Row1, matrix.Row1) &&
+                   EqualityComparer<Vector3>.Default.Equals(Row2, matrix.Row2);
+        }
+
+        public override int GetHashCode() {
+            const int n = -1521134295;
+            var code = -99944038;
+            code = code * n + Row0.GetHashCode();
+            code = code * n + Row1.GetHashCode();
+            code = code * n + Row2.GetHashCode();
+            return code;
+        }
     }
 }
