@@ -100,7 +100,7 @@ namespace AnarchyEngine.Core {
             float cameraSpeed = 2f;
             const float sensitivity = 0.3f;
 
-            if (Input.IsKeyDown(Key.ControlLeft)) {
+            if (Input.IsKeyDown(Key.LeftCtrl)) {
                 cameraSpeed = 4f;
             }
 
@@ -114,7 +114,7 @@ namespace AnarchyEngine.Core {
                 Position += Right * cameraSpeed * (float)Time.DeltaTime; // Right
             if (Input.IsKeyDown(Key.Space))
                 Position += Up * cameraSpeed * (float)Time.DeltaTime; // Up 
-            if (Input.IsKeyDown(Key.LShift))
+            if (Input.IsKeyDown(Key.LeftShift))
                 Position -= Up * cameraSpeed * (float)Time.DeltaTime; // Down
 
             /*if (Input.IsKeyPressed(Key.R)) {
