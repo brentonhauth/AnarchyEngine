@@ -1,10 +1,4 @@
 ﻿using OpenTK.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Key = AnarchyEngine.Core.Key;
 
 namespace AnarchyEngine.Core {
     public static class Input {
@@ -33,22 +27,14 @@ namespace AnarchyEngine.Core {
 
     public enum Key {
         Unknown = 0,
-        ShiftLeft = 1,
-        LShift = 1,
-        ShiftRight = 2,
-        RShift = 2,
-        ControlLeft = 3,
-        LControl = 3,
-        ControlRight = 4,
-        RControl = 4,
-        AltLeft = 5,
-        LAlt = 5,
-        AltRight = 6,
-        RAlt = 6,
-        WinLeft = 7,
-        LWin = 7,
-        WinRight = 8,
-        RWin = 8,
+        LeftShift = 1,
+        RightShift = 2,
+        LeftCtrl = 3,
+        RightCtrl = 4,
+        LeftAlt = 5,
+        RightAlt = 6,
+        LeftWin = 7,
+        RightWin = 8,
         Menu = 9,
         F1 = 10,
         F2 = 11,
