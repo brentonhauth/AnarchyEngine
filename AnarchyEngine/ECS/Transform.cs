@@ -53,9 +53,9 @@ namespace AnarchyEngine.ECS {
             Rotation = new Quaternion(Vector3.Zero);
         }
 
-        internal void SetPositionSilently(Vector3 position) => m_Position = position;
-        internal void SetRotationSilently(Quaternion rotation) => m_Rotation = rotation;
-        internal void SetScaleSilently(Vector3 scale) => m_Scale = scale;
+        internal void SetPositionSilently(in Vector3 position) => m_Position = position;
+        internal void SetRotationSilently(in Quaternion rotation) => m_Rotation = rotation;
+        internal void SetScaleSilently(in Vector3 scale) => m_Scale = scale;
 
         public static explicit operator DataTypes.Matrix4(Transform t) => t.Model;
         public static explicit operator Matrix4(Transform t) => t.Model;

@@ -21,9 +21,10 @@ namespace AnarchyEngine.ECS.Components {
         }
 
         public override void Start() {
-            Mesh.MeshFilter = this;
-            Material?.Init();
+            Material = Material ?? Material.Default;
+            Material.Shader.Init();
             Mesh.Init();
+            Mesh.VertexArray.InitWithShader(Material.Shader);
         }
 
         public override void Render() {
@@ -33,8 +34,6 @@ namespace AnarchyEngine.ECS.Components {
                 //Renderer.Push("texture0", 1);
             }*/
             Renderer.Push(Mesh.Shader, Mesh.VertexArray, Material, Entity.Transform);
-            var color = Color4.Gold;// Color4.FromXyz( Vector4.One );
-            //Renderer.Push(Shader.ColorName, new OpenTK.Vector3(color.R, color.G, color.B));
             Renderer.Submit();
         }
     }

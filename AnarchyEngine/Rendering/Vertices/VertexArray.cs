@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AnarchyEngine.Rendering.Shaders;
 using OpenTK.Graphics.OpenGL4;
 
@@ -18,17 +17,19 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         private Shader Shader;
 
-        public VertexArray(Shader shader) {
-            Data = new List<float>();
-            DataModels = new List<VertexArrayDataModel>();
-            Shader = shader;
-        }
-
-        // ~VertexArray() => Dispose();
-
         // find better solution
         public int Count => (int)(Data.Count / DataModels.First().Stride);
 
+        public VertexArray(Shader shader) : this() {
+            Shader = shader;
+        }
+
+        public VertexArray() {
+            DataModels = new List<VertexArrayDataModel>();
+            Data = new List<float>();
+        }
+
+        public void SetShader(Shader s) => Shader = s;
 
         public void Init() {
             int vbo = GL.GenBuffer();
@@ -50,20 +51,22 @@ namespace AnarchyEngine.Rendering.Vertices {
 
             GL.BindVertexArray(VAO);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-
-            foreach (var model in DataModels) {
-                model.InitWithShader(Shader);
-            }
+            
+            // Init With Shader
         }
 
+        public void InitWithShader(Shader shader) {
+            foreach (var model in DataModels) {
+                model.InitWithShader(shader);
+            }
+        }
+        
         public void Model(string attr, int size, int stride, int offset) {
             var data = new VertexArrayDataModel(attr, size, stride, offset);
             DataModels.Add(data);
         }
 
-        public void Bind() {
-            GL.BindVertexArray(VAO);
-        }
+        public void Bind() => GL.BindVertexArray(VAO);
 
         public void Dispose() {
             GL.DeleteBuffer(VBO);
@@ -96,8 +99,7 @@ namespace AnarchyEngine.Rendering.Vertices {
                     type: VertexAttribPointerType.Float,
                     normalized: false,
                     stride: Stride * sizeof(float),
-                    offset: Offset * sizeof(float)
-                );
+                    offset: Offset * sizeof(float));
             }
         }
     }

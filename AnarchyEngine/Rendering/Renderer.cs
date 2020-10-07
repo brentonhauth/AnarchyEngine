@@ -74,7 +74,7 @@ namespace AnarchyEngine.Rendering {
         public static void Finish() {
             while (Contexts.Count > 0) {
                 RenderContext ctx = Contexts.Dequeue();
-                Shader shader = ctx.Shader;
+                Shader shader = ctx.Material.Shader;
                 VertexArray va = ctx.VertexArray;
 
                 ctx.Texture?.Use();//temp

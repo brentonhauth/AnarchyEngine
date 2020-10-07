@@ -10,7 +10,7 @@ namespace AnarchyEngine.Core {
 
         public static DateTime FromEpoch(int timestamp) => EpochStart.AddSeconds(timestamp);
 
-        public static double DeltaTime { get; internal set; }
+        public static float DeltaTime { get; internal set; }
 
         public static decimal TotalTime { get; internal set; } = 0;
     }

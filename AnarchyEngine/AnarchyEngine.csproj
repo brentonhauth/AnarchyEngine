@@ -78,6 +78,7 @@
     <Compile Include="ECS\Entity.cs" />
     <Compile Include="ECS\Transform.cs" />
     <Compile Include="Physics\BBox.cs" />
+    <Compile Include="Physics\Collision.cs" />
     <Compile Include="Physics\Geometry.cs" />
     <Compile Include="Physics\PhysicsSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Rendering\Texture.cs" />
     <Compile Include="Rendering\Vertices\Vertex.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
+    <Compile Include="Rendering\Vertices\VertexBuffer.cs" />
     <Compile Include="Util\ArrayHelper.cs" />
     <Compile Include="Util\FileHelper.cs" />
     <Compile Include="Util\Logger.cs" />

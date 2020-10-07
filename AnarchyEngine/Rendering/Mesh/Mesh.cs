@@ -100,7 +100,6 @@ namespace AnarchyEngine.Rendering.Mesh {
 
         public void Init() {
             Texture?.Init();
-            Shader.Init();
             IEnumerable<float> raws;
 
             bool hasPosition = HasProperty(VertexProperty.Position),

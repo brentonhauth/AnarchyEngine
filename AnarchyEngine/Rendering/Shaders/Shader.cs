@@ -50,16 +50,16 @@ namespace AnarchyEngine.Rendering.Shaders {
             DeleteShader(Handle, vertex);
             DeleteShader(Handle, fragment);
 
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int numberOfUniforms);
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int uniformCount);
 
-            for (var i = 0; i < numberOfUniforms; i++) {
+            for (var i = 0; i < uniformCount; i++) {
                 var key = GL.GetActiveUniform(Handle, i, out _, out _);
 
                 var location = GL.GetUniformLocation(Handle, key);
 
                 UniformLocations.Add(key, location);
             }
-
+            
             vertPath = fragPath = string.Empty;
         }
 

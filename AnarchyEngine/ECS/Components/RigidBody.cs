@@ -56,7 +56,7 @@ namespace AnarchyEngine.ECS.Components {
             Mass = mass;
         }
 
-        public RigidBody() : this(1f) { }
+        public RigidBody() : this(100f) { }
 
         ~RigidBody() => Dispose();
 
@@ -79,8 +79,9 @@ namespace AnarchyEngine.ECS.Components {
             var transform = Entity.Transform;
             var rotation = transform.Rotation;
             
-            Body.Material.Restitution = 0f;
-            Body.Material.KineticFriction = 1f;
+            /*Body.Material.Restitution = float.MinValue;
+            Body.Material.KineticFriction = .3f;
+            Body.Material.StaticFriction = .6f;*/
 
             DataTypes.Matrix4 orientation = Matrix4.CreateFromQuaternion(rotation);
 
@@ -128,19 +129,18 @@ namespace AnarchyEngine.ECS.Components {
 
         public override void Update() {
             if (IsStatic) return;
+            // Body.Update();
+
             var transform = Entity.Transform;
-
-            if (_LastPosition != Body.Position) {
-                DataTypes.Vector3 pos = _LastPosition = Body.Position;
-                transform.SetPositionSilently(pos);
-            }
-
-            DataTypes.Matrix3 rot = Body.Orientation;
-
-            if (_LastRotation != rot) {
-                _LastRotation = rot;
-                transform.SetRotationSilently(Quaternion.FromMatrix(rot.Transposed));
-            }
+            transform.SetPositionSilently(Body.Position);
+            
+            JMatrix m = Body.Orientation;
+            var rotation = new Matrix3(
+                m.M11, m.M21, m.M31,
+                m.M12, m.M22, m.M32,
+                m.M13, m.M23, m.M33);
+            Quaternion.FromMatrix(ref rotation, out Quaternion result);
+            transform.SetRotationSilently(result);
         }
 
         public override void AppendTo(Entity e) {
@@ -165,7 +165,7 @@ namespace AnarchyEngine.ECS.Components {
             IsStatic = true;
         }
 
-        public override void Update() { }
+        //public override void Update() { }
     }
 
     public class DebugDrawer {

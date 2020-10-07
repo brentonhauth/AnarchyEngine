@@ -29,7 +29,9 @@ namespace AnarchyRunner {
 
         static void Main(string[] args) {
             //RunToTestBasicRigidBodies();
-            ThrowCubesDemo();
+            //ThrowCubesDemo();
+            Console.WriteLine(Math.Floor(float.MaxValue));
+            Console.ReadKey();
         }
 
         private static void RunToTestBasicRigidBodies() {
@@ -109,7 +111,9 @@ namespace AnarchyRunner {
             //planeMesh.AddTexture(tex);
 
             Entity planeEntity = new Entity();
-            planeEntity.AddComponent(new MeshFilter(planeMesh));
+            var planeFilter = planeEntity.AddComponent<MeshFilter>();
+            planeFilter.Mesh = planeMesh;
+            planeFilter.Material = Material.Default;
             planeEntity.Transform.Position = new Vector3(0f, -1f, 0f);
             planeEntity.Transform.Scale = new Vector3(50f, 1, 50f);
             planeEntity.AddComponent<EmptyRigidBody>();

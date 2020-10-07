@@ -13,12 +13,13 @@ namespace AnarchyEngine.Rendering {
 
         private Dictionary<string, Texture> Textures = new Dictionary<string, Texture>();
         private bool Initialized = false;
+        public Shader Shader { get; set; } = Shader.Default;
         public Color4 Color { get; set; } = Color4.Transparent;
 
         // static Material() { }
 
         public Material() { }
-
+        
         public Material(IDictionary<string, Texture> textures) {
             if (textures.Count > TextureLimit) {
                 throw new ReachedTextureLimitException();
@@ -28,6 +29,7 @@ namespace AnarchyEngine.Rendering {
 
         public void Init() {
             if (Initialized) return; else Initialized = true;
+            Shader.Init();
             foreach (var tex in Textures) {
                 tex.Value.Init();
             }
