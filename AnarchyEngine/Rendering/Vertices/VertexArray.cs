@@ -4,21 +4,18 @@ using System.Linq;
 using AnarchyEngine.Rendering.Shaders;
 using OpenTK.Graphics.OpenGL4;
 
-
 namespace AnarchyEngine.Rendering.Vertices {
-    public class VertexArray : IDisposable {
+    internal class VertexArray : IPipable {
 
-        public int VAO { get; private set; }
-        public int VBO { get; private set; }
-
-        private List<float> Data;
-
+        public int Handle { get; private set; }
+        public VertexBuffer VertexBuffer { get; private set; }
+        
         private List<VertexArrayDataModel> DataModels;
 
         private Shader Shader;
 
         // find better solution
-        public int Count => (int)(Data.Count / DataModels.First().Stride);
+        public int Count => (int)(VertexBuffer.Count / DataModels.First().Stride);
 
         public VertexArray(Shader shader) : this() {
             Shader = shader;
@@ -26,36 +23,29 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         public VertexArray() {
             DataModels = new List<VertexArrayDataModel>();
-            Data = new List<float>();
+        }
+
+        public void AddVertexBuffer(VertexBuffer vb) {
+            VertexBuffer = vb;
+        }
+
+        public void AddVertexBuffer(float[] data) {
+            AddVertexBuffer(new VertexBuffer(data));
         }
 
         public void SetShader(Shader s) => Shader = s;
 
         public void Init() {
-            int vbo = GL.GenBuffer();
+            if (VertexBuffer == null)
+                AddVertexBuffer(new float[0]);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(
-                target: BufferTarget.ArrayBuffer,
-                size: Data.Count * sizeof(float),
-                data: Data.ToArray(),
-                usage: BufferUsageHint.StaticDraw);
-
-            Init(vbo);
+            VertexBuffer.Init();
+            Handle = GL.GenVertexArray();
+            Use();
+            VertexBuffer.Use();
         }
 
-        public void Init(int vbo) {
-
-            VBO = vbo;
-            VAO = GL.GenVertexArray();
-
-            GL.BindVertexArray(VAO);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            
-            // Init With Shader
-        }
-
-        public void InitWithShader(Shader shader) {
+        public void Bind(Shader shader) {
             foreach (var model in DataModels) {
                 model.InitWithShader(shader);
             }
@@ -66,16 +56,13 @@ namespace AnarchyEngine.Rendering.Vertices {
             DataModels.Add(data);
         }
 
-        public void Bind() => GL.BindVertexArray(VAO);
+        public void Use() => GL.BindVertexArray(Handle);
 
-        public void Dispose() {
-            GL.DeleteBuffer(VBO);
-            GL.DeleteVertexArray(VAO);
-            GL.DeleteProgram(Shader.Handle);
-        }
+        public void Dispose() => GL.DeleteVertexArray(Handle);
 
-        public void AddData(IEnumerable<float> data) => Data.AddRange(data);
-        public void AddData(float data) => Data.Add(data);
+        //public void AddData(IEnumerable<float> data) => Data.AddRange(data);
+        // public void AddData(float data) => Data.Add(data);
+
 
         //--------------------------------------------------------------------------------
 

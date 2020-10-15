@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AnarchyEngine.ECS {
-    public class Entity : IDisposable {
+    public class Entity : Core.Object {
 
         private static uint IdCount = 0;
 
@@ -109,24 +109,30 @@ namespace AnarchyEngine.ECS {
         }
 
         public static Entity FindByName(string name) {
-            if (World.CurrentScene == null) {
+            if (Scene.Current == null) {
                 return null;
             }
-            var scene = World.CurrentScene;
-            return scene.FindEntityInScene(name);
+            return Scene.Current.FindEntityInScene(name);
         }
 
-        public virtual void Start() {
+        public override void Init() {
+            base.Init();
+            Components.ForEach(c => c.Init());
+            Children.ForEach(e => e.Init());
+        }
+
+        public override void Start() {
+            base.Start();
             Components.ForEach(c => c.Start());
             Children.ForEach(e => e.Start());
         }
 
-        public virtual void Render() {
+        public override void Render() {
             Components.ForEach(c => c.Render());
             Children.ForEach(e => e.Render());
         }
 
-        public virtual void Update() {
+        public override void Update() {
             Components.ForEach(c => c.Update());
             Children.ForEach(e => e.Update());
         }
@@ -141,7 +147,7 @@ namespace AnarchyEngine.ECS {
             Children.Add(entity);
         }
 
-        public void Dispose() {
+        public override void Dispose() {
             Components.ForEach(c => c.Dispose());
             Children.ForEach(e => e.Dispose());
         }

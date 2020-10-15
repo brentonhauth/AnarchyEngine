@@ -10,7 +10,7 @@ namespace AnarchyEngine.DataTypes {
         void Render();
         void Update();
     }
-
+    
     public class Updatable : IUpdatable {
 
         public Action OnRender, OnStart, OnUpdate;

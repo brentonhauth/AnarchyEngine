@@ -28,11 +28,10 @@ namespace AnarchyEngine.Rendering {
         }
 
         public void Init() {
-            if (Initialized) return; else Initialized = true;
-            Shader.Init();
+            /*if (Initialized) return; else Initialized = true;
             foreach (var tex in Textures) {
                 tex.Value.Init();
-            }
+            }*/
         }
 
         public void SetTexture(string name, Texture texture) {

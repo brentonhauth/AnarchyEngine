@@ -99,7 +99,11 @@ namespace AnarchyEngine.DataTypes {
         public static float DistanceSquared(Vector4 u, Vector4 v) => (u - v).MagnitudeSquared;
 
         public static float Dot(Vector4 u, Vector4 v) {
-            return (u.X * v.X) + (u.Y * v.Y) + (u.Z * v.Z) + (u.W * v.W);
+            Dot(ref u, ref v, out float result);
+            return result;
+        }
+        public static void Dot(ref Vector4 u, ref Vector4 v, out float result) {
+            result = (u.X * v.X) + (u.Y * v.Y) + (u.Z * v.Z) + (u.W * v.W);
         }
 
         public static float Angle(Vector4 u, Vector4 v) {
@@ -117,6 +121,41 @@ namespace AnarchyEngine.DataTypes {
         public Vector4 Projection(Vector4 against) => Projection(this, against);
         public static Vector4 Projection(Vector4 self, Vector4 against) {
             return Dot(against, self) / against.MagnitudeSquared * against;
+        }
+        
+        public static void Add(in Vector4 left, in Vector4 right, out Vector4 sum) {
+            sum.X = left.X + right.X;
+            sum.Y = left.Y + right.Y;
+            sum.Z = left.Z + right.Z;
+            sum.W = left.W + right.W;
+        }
+
+        public static void Subtract(in Vector4 left, in Vector4 right, out Vector4 diff) {
+            diff.X = left.X - right.X;
+            diff.Y = left.Y - right.Y;
+            diff.Z = left.Z - right.Z;
+            diff.W = left.W - right.W;
+        }
+
+        public static void Multiply(in Vector4 left, in Vector4 right, out Vector4 prod) {
+            prod.X = left.X * right.X;
+            prod.Y = left.Y * right.Y;
+            prod.Z = left.Z * right.Z;
+            prod.W = left.W * right.W;
+        }
+
+        public static void Multiply(in Vector4 vec, in float scale, out Vector4 prod) {
+            prod.X = vec.X * scale;
+            prod.Y = vec.Y * scale;
+            prod.Z = vec.Z * scale;
+            prod.W = vec.W * scale;
+        }
+
+        public static void Divide(in Vector4 left, in float right, out Vector4 quot) {
+            quot.X = left.X / right;
+            quot.Y = left.Y / right;
+            quot.Z = left.Z / right;
+            quot.W = left.W / right;
         }
         #endregion
 

@@ -94,7 +94,11 @@ namespace AnarchyEngine.DataTypes {
         public static float DistanceSquared(Vector3 u, Vector3 v) => (u - v).MagnitudeSquared;
 
         public static float Dot(Vector3 u, Vector3 v) {
-            return (u.X * v.X) + (u.Y * v.Y) + (u.Z * v.Z);
+            Dot(ref u, ref v, out float result);
+            return result;
+        }
+        public static void Dot(ref Vector3 u, ref Vector3 v, out float result) {
+            result = (u.X * v.X) + (u.Y * v.Y) + (u.Z * v.Z);
         }
 
         public static Vector3 Cross(Vector3 u, Vector3 v) {
@@ -114,6 +118,36 @@ namespace AnarchyEngine.DataTypes {
         public Vector3 Projection(Vector3 against) => Projection(this, against);
         public static Vector3 Projection(Vector3 self, Vector3 against) {
             return Dot(against, self) / against.MagnitudeSquared * against;
+        }
+
+
+        public static void Add(in Vector3 left, in Vector3 right, out Vector3 sum) {
+            sum.X = left.X + right.X;
+            sum.Y = left.Y + right.Y;
+            sum.Z = left.Z + right.Z;
+        }
+
+        public static void Subtract(in Vector3 left, in Vector3 right, out Vector3 diff) {
+            diff.X = left.X - right.X;
+            diff.Y = left.Y - right.Y;
+            diff.Z = left.Z - right.Z;
+        }
+
+        public static void Multiply(in Vector3 left, in Vector3 right, out Vector3 prod) {
+            prod.X = left.X * right.X;
+            prod.Y = left.Y * right.Y;
+            prod.Z = left.Z * right.Z;
+        }
+        public static void Multiply(in Vector3 vec, in float scale, out Vector3 prod) {
+            prod.X = vec.X * scale;
+            prod.Y = vec.Y * scale;
+            prod.Z = vec.Z * scale;
+        }
+
+        public static void Divide(in Vector3 left, in float right, out Vector3 quot) {
+            quot.X = left.X / right;
+            quot.Y = left.Y / right;
+            quot.Z = left.Z / right;
         }
         #endregion
 

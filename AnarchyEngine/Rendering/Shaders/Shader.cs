@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 
 namespace AnarchyEngine.Rendering.Shaders {
-    public class Shader {
+    public class Shader : IPipable {
         public const string PositionName = "aPosition";
         public const string NormalName = "aNormal";
         public const string UVName = "aUV";
@@ -35,6 +35,7 @@ namespace AnarchyEngine.Rendering.Shaders {
             UniformLocations = new Dictionary<string, int>();
             this.vertPath = vertPath;
             this.fragPath = fragPath;
+            Renderer.ScheduleForInit += Init;
         }
 
         public void Init() {
@@ -142,6 +143,10 @@ namespace AnarchyEngine.Rendering.Shaders {
             int location = GL.GetUniformLocation(Handle, name);
             UniformLocations.Add(name, location);
             return location;
+        }
+
+        public void Dispose() {
+            GL.DeleteProgram(Handle);
         }
     }
 }

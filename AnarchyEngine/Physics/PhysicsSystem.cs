@@ -24,7 +24,7 @@ namespace AnarchyEngine.Physics {
         }
 
         internal static void Update() {
-            JWorld.Step((float)Time.DeltaTime, true);
+            JWorld.Step(Time.DeltaTime, true);
         }
 
         internal static void Add(JRigidBody rb) => JWorld.AddBody(rb);

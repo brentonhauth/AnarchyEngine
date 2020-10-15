@@ -10,6 +10,9 @@ using Vector3 = AnarchyEngine.DataTypes.Vector3;
 
 namespace AnarchyEngine.Core {
     public class Camera {
+
+        public static Camera Main { get; internal set; }
+
         private bool _firstMove = true;
         private Vector2 _lastPos;
         private float m_pitch,
@@ -97,41 +100,23 @@ namespace AnarchyEngine.Core {
 
 
         public void Update() {
-            float cameraSpeed = 2f;
-            const float sensitivity = 0.3f;
+            const float sensitivity = .3f;
 
-            if (Input.IsKeyDown(Key.LeftCtrl)) {
-                cameraSpeed = 4f;
-            }
+            float cameraSpeed = (Input.IsKeyDown(Key.LeftCtrl) ? 4f : 2f) * Time.DeltaTime;
+            
 
             if (Input.IsKeyDown(Key.W))
-                Position += Front * cameraSpeed * (float)Time.DeltaTime; // Forward 
+                Position += Front * cameraSpeed; // Forward 
             if (Input.IsKeyDown(Key.S))
-                Position -= Front * cameraSpeed * (float)Time.DeltaTime; // Backwards
+                Position -= Front * cameraSpeed;
             if (Input.IsKeyDown(Key.A))
-                Position -= Right * cameraSpeed * (float)Time.DeltaTime; // Left
+                Position -= Right * cameraSpeed;
             if (Input.IsKeyDown(Key.D))
-                Position += Right * cameraSpeed * (float)Time.DeltaTime; // Right
+                Position += Right * cameraSpeed;
             if (Input.IsKeyDown(Key.Space))
-                Position += Up * cameraSpeed * (float)Time.DeltaTime; // Up 
+                Position += Up * cameraSpeed;
             if (Input.IsKeyDown(Key.LeftShift))
-                Position -= Up * cameraSpeed * (float)Time.DeltaTime; // Down
-
-            /*if (Input.IsKeyPressed(Key.R)) {
-                ApplyRotation = !ApplyRotation;
-            }
-
-            if (Input.IsKeyPressed(Key.F11)) {
-                WindowState = WindowState == 0 ? WindowState.Fullscreen : 0;
-            }*/
-
-            /*if (Input.IsKeyPressed(Key.Q)) {
-                foreach (var cube in Cubes) {
-                    var norm = (cube.Transform.Position - camera.Position).Normalized();
-                    cube.Transform.Position += norm * 10f;
-                }
-            }*/
-
+                Position -= Up * cameraSpeed;
 
             var mouse = Mouse.GetState();
 
@@ -146,13 +131,9 @@ namespace AnarchyEngine.Core {
                     Yaw += deltaX * sensitivity;
                     Pitch -= deltaY * sensitivity;
                     _lastPos = newPos;
-                    //Game.SkyBox = Color4.FromXyz(new Vector4(
-                    //    new Vector3(newPos.X, newPos.Y, newPos.X + newPos.Y).Normalized(), 1));
                 }
 
             }
-
-            // lightPos = Position;
         }
     }
 }

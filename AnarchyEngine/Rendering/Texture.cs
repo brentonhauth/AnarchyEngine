@@ -7,7 +7,7 @@ using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 using OpenTK;
 
 namespace AnarchyEngine.Rendering {
-    public class Texture {
+    public class Texture : IPipable {
         public int Handle { get; private set; }
 
         private readonly string Path;
@@ -18,6 +18,7 @@ namespace AnarchyEngine.Rendering {
         // Create texture from path.
         public Texture(string path) {
             Path = path;
+            Renderer.ScheduleForInit += Init;
         }
         public void Init() {
             if (Initialized) return; else Initialized = true;
@@ -50,9 +51,14 @@ namespace AnarchyEngine.Rendering {
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-        public void Use(TextureUnit unit=TextureUnit.Texture0) {
+        public void Use() => Use(TextureUnit.Texture0);
+
+        public void Use(TextureUnit unit) {
             GL.ActiveTexture(unit);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
+        }
+
+        public void Dispose() {
         }
 
         public static TextureUnit UnitFromInt(int i) {

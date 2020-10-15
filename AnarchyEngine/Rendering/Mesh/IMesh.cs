@@ -7,7 +7,7 @@ namespace AnarchyEngine.Rendering.Mesh {
         MeshFilter MeshFilter { get; set; }
         Shader Shader { get; }
         Texture Texture { get; }
-        VertexArray VertexArray { get; }
+        // VertexArray VertexArray { get; }
         void Init();
         void Render();
     }

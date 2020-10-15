@@ -87,5 +87,34 @@ namespace AnarchyEngine.Rendering.Vertices {
 
             return vertex;
         }
+
+        public static bool operator ==(Vertex left, Vertex right) {
+            return left.Position == right.Position &&
+                   left.Normal == right.Normal &&
+                   left.UV == right.UV;
+        }
+
+        public static bool operator !=(Vertex left, Vertex right) {
+            return left.Position != right.Position ||
+                   left.Normal != right.Normal ||
+                   left.UV != right.UV;
+        }
+
+        public override bool Equals(object o) {
+            return o is Vertex && this == (Vertex)o;
+        }
+
+        public override int GetHashCode() {
+            const int n = -1521134295;
+            var code = 2128464926;
+            code = code * n + Position.GetHashCode();
+            code = code * n + Normal.GetHashCode();
+            code = code * n + UV.GetHashCode();
+            return code;
+        }
+
+        public override string ToString() {
+            return $"Position: {Position}, Normal: {Normal}, UV: {UV}";
+        }
     }
 }

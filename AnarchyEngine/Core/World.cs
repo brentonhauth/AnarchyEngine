@@ -12,7 +12,7 @@ namespace AnarchyEngine.Core {
 
         public static Camera MainCamera { get; internal set; }
 
-        public static Scene CurrentScene { get; private set; }
+        // public static Scene CurrentScene { get; private set; }
 
         private static Dictionary<string, Scene> Scenes = new Dictionary<string, Scene>(0);
 
@@ -31,28 +31,32 @@ namespace AnarchyEngine.Core {
         }
 
         internal static void Start() {
-            if (CurrentScene == null) {
-                CurrentScene = Scenes.ElementAt(0).Value;
+            if (Scene.Current == null) {
+                Scene.Current = Scenes.ElementAt(0).Value;
             }
-            MainCamera?.Start();
-            CurrentScene?.Start();
+            Camera.Main.Start();
+            Scene.Current.Start();
         }
 
         internal static void Render() {
-            MainCamera.Render();
-            CurrentScene.Render();
+            Camera.Main.Render();
+            Scene.Current.Render();
         }
 
         internal static void Update() {
-            MainCamera.Update(); // change camera logic
-            CurrentScene.Update();
+            Camera.Main.Update(); // change camera logic
+            Scene.Current.Update();
+        }
+
+        internal static void Dispose() {
+            Scene.Current.Dispose();
         }
 
         public static void LoadScene(string sceneName) {
             if (Scenes.TryGetValue(sceneName, out Scene scene)) {
-                CurrentScene = scene;
+                Scene.Current = scene;
             } else {
-                throw new Exception($"No scene with name \"{sceneName}\"");
+                throw new Exception($"No scene named \"{sceneName}\"");
             }
         }
 

@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace AnarchyEngine.Util {
     public static class ArrayHelper {
-
-        public static T First<T>(this T[] list) => list[0];
-
-        public static T Last<T>(this T[] list) => list[list.Length - 1];
-
         public static T[] Weave<T>(T[] first, T[] second, int f, int s) {
             var weaved = new List<T>();
             Queue<T> q1 = new Queue<T>(first),
@@ -25,6 +20,12 @@ namespace AnarchyEngine.Util {
         }
 
         public static T Pop<T>(this Queue<T> q) => q.Dequeue();
+
+        public static void Empty<T>(this Queue<T> q, Action<T> action) {
+            while (q.Count > 0) {
+                action(q.Dequeue());
+            }
+        }
 
         public static T[] Pop<T>(this Queue<T> queue, int amount) {
             amount = OpenTK.MathHelper.Clamp(amount, 0, queue.Count);

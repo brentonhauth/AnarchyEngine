@@ -182,10 +182,10 @@ namespace AnarchyEngine.ECS.Components {
         public void Draw(in Matrix4 model) {
             var shader = Shader.Default;
             var va = Mesh.Cube.VertexArray;
-            va.Bind();
+            va.Use();
             shader.Use();
             shader.SetVector3(Shader.ColorName, new Vector3(1, 1, 0));
-            shader.SetMatrix4(Shader.ViewProjectionName, Core.World.MainCamera.ViewProjection);
+            shader.SetMatrix4(Shader.ViewProjectionName, Core.Camera.Main.ViewProjection);
             shader.SetMatrix4(Shader.ModelName, model);
 
             GL.DrawArrays(PrimitiveType.LineLoop, 0, 36);

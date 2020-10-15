@@ -55,7 +55,7 @@ namespace AnarchyEngine.Rendering.Mesh {
             -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
             -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
         };
-        public static readonly Mesh Cube = FromRaw(_CubeVertices).AddShaderWithVA(Shader.Default);
+        public static readonly Mesh Cube = FromRaw(_CubeVertices);
         #endregion
         public VertexProperty VertexProperties { get; set; }
 
@@ -67,7 +67,7 @@ namespace AnarchyEngine.Rendering.Mesh {
 
         public Texture Texture { get; set; }
 
-        public VertexArray VertexArray { get; private set; }
+        internal VertexArray VertexArray { get; private set; }
 
 
 
@@ -77,28 +77,9 @@ namespace AnarchyEngine.Rendering.Mesh {
             VertexProperties = properties;
         }
 
-        public Mesh AddShader(Shader shader) {
-            Shader = shader;
-            return this;
-        }
-
-        public Mesh AddShaderWithVA(Shader shader) {
-            Shader = shader;
-            VertexArray = new VertexArray(Shader);
-            return this;
-        }
-
-        public Mesh AddTexture(Texture texture) {
-            Texture = texture;
-            return this;
-        }
-
-        public Mesh AddVertexArray(VertexArray vertexArray) {
-            VertexArray = vertexArray;
-            return this;
-        }
-
         public void Init() {
+            if (VertexArray != null) return;
+            VertexArray = new VertexArray();
             Texture?.Init();
             IEnumerable<float> raws;
 
@@ -130,7 +111,7 @@ namespace AnarchyEngine.Rendering.Mesh {
                 return raw;
             });
 
-            VertexArray.AddData(raws);
+            VertexArray.AddVertexBuffer(raws.ToArray());
             VertexArray.Init();
         }
 
@@ -146,7 +127,7 @@ namespace AnarchyEngine.Rendering.Mesh {
 
             //Renderer.Instance.Submit(Shader, VertexArray);//, MeshFilter.Entity.Transform);
             //Texture?.Use();
-            //Shader?.SetMatrix4("viewProjection", World.MainCamera.ViewProjection);
+            //Shader?.SetMatrix4("viewProjection", Camera.Main.ViewProjection);
             //Shader?.SetMatrix4("model", (Matrix4)MeshFilter.Entity.Transform);
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
         }
@@ -169,9 +150,7 @@ namespace AnarchyEngine.Rendering.Mesh {
         }
         public static Mesh LoadFbx(string filename, VertexProperty properties = VertexProperty.All) {
             var mesh = new Mesh(properties);
-
-            mesh.AddShaderWithVA(Shader.Default);
-
+            
             mesh.Vertices.AddRange(FileHelper.LoadFbx(filename));
 
             return mesh;

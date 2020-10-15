@@ -28,74 +28,12 @@ namespace AnarchyRunner {
         };
 
         static void Main(string[] args) {
-            //RunToTestBasicRigidBodies();
-            //ThrowCubesDemo();
-            Console.WriteLine(Math.Floor(float.MaxValue));
+            ThrowCubesDemo();
+            /*int x = 2323;
+            int y = 67;
+            Utilities.Swap(ref x, ref y);
+            Console.WriteLine($"x: {x}, y: {y}");*/
             Console.ReadKey();
-        }
-
-        private static void RunToTestBasicRigidBodies() {
-            Scene scene = new Scene();
-            List<Entity> entities = new List<Entity>();
-            const float bounds = 5f;
-
-
-            Mesh duckMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\Duck.fbx", VertexProperty.All),
-                wolfMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\wolf.fbx", VertexProperty.All),
-                planeMesh = Mesh.FromRaw(planeVertices).AddShaderWithVA(Shader.Default);
-            
-            var tex = new Texture(@"\Resources\img2.jpg");
-            wolfMesh.AddTexture(tex);
-            duckMesh.AddTexture(tex);
-            planeMesh.AddTexture(tex);
-
-            Entity planeEntity = new Entity();
-            planeEntity.AddComponent(new MeshFilter(planeMesh));
-            planeEntity.Transform.Position = new Vector3(0f, -1f, 0f);
-            planeEntity.Transform.Scale = new Vector3(50f, 1, 50f);
-            planeEntity.AddComponent<EmptyRigidBody>();
-            var planeBC = planeEntity.AddComponent<BoxCollider>();
-            planeBC.Size = planeEntity.Transform.Scale;
-            scene.Add(planeEntity);
-
-            for (int i = 0; i < 15; i++) {
-                Entity entity = new Entity();
-                entity.AddComponent(new MeshFilter(duckMesh));
-                entity.Transform.Position = Vector3.Random(bounds, 2 * bounds);
-                // entity.Transform.Rotation = new Quaternion(Vector3.Random(-bounds, bounds));
-                entity.Transform.Scale *= .1f;
-                entity.AddComponent<RigidBody>();
-                scene.Add(entity);
-            }
-
-            for (int i = 0; i < 15; i++) {
-                Entity entity = new Entity();
-                entity.AddComponent(new MeshFilter(wolfMesh));
-                entity.Transform.Position = Vector3.Random(bounds, 2 * bounds);
-                // entity.Transform.Rotation = new Quaternion(Vector3.Random(-bounds, bounds));
-                entity.Transform.Scale *= .01f;
-                var rb = entity.AddComponent<RigidBody>();
-                if (i == 0) {
-                    rb.AffectedByGravity = true;
-                }
-                rb.IsBodyActive = true;
-                scene.Add(entity);
-            }
-
-            Entity testEntity = new Entity();
-            var testrb = testEntity.AddComponent<RigidBody>();
-            testrb.IsBodyActive = true;
-            scene.Add(testEntity);
-            scene.Add(new Updatable {
-                OnUpdate = () => {
-
-                    testEntity.Transform.Position = World.MainCamera.Position;
-                    
-                }
-            });
-
-            World.AddScene(scene);
-            World.Run("yee", 1000, 640);
         }
 
         private static void ThrowCubesDemo() {
@@ -105,7 +43,7 @@ namespace AnarchyRunner {
 
             Mesh duckMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\Duck.fbx", VertexProperty.All),
                 wolfMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\wolf.fbx", VertexProperty.All),
-                planeMesh = Mesh.FromRaw(planeVertices).AddShaderWithVA(Shader.Default);
+                planeMesh = Mesh.FromRaw(planeVertices);
 
             //var tex = new Texture(@"\Resources\img2.jpg");
             //planeMesh.AddTexture(tex);
@@ -138,7 +76,7 @@ namespace AnarchyRunner {
                 OnUpdate = () => {
                     
                     if (Input.IsKeyPressed(Key.F)) {
-                        var cam = World.MainCamera;
+                        var cam = Camera.Main;
                         var entity = AddBox((1.1f * cam.Front) + cam.Position, cam.Front * 5f);
                         scene.Add(entity);
                         cubes.Enqueue(entity);

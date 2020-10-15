@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AnarchyEngine.ECS.Components {
     public interface ISingleComponent { }
 
-    public class Component : IDisposable {
+    public class Component : Core.Object {
         private static uint IdCount = 0;
 
         public readonly uint Id;
@@ -16,14 +16,6 @@ namespace AnarchyEngine.ECS.Components {
 
         public Component() { Id = ++IdCount; }
 
-        public virtual void Init() { }
-
-        public virtual void Start() { }
-
-        public virtual void Render() { }
-
-        public virtual void Update() { }
-
         public virtual void AppendTo(Entity entity) {
             Entity = entity;
         }
@@ -31,9 +23,5 @@ namespace AnarchyEngine.ECS.Components {
         public Component(Entity entity) {
             Entity = entity;
         }
-
-        public virtual void Dispose() { }
-
-        public static implicit operator bool(Component comp) => comp != null;
     }
 }

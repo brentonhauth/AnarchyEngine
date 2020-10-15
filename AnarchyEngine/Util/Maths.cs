@@ -83,13 +83,5 @@ namespace AnarchyEngine.Util {
                 y: Sin(pitch),
                 z: Cos(pitch) * Sin(yaw));
         }
-
-        public static T Cast<T>(object @object, T @default) {
-            try {
-                T value = (T)@object;
-                return value;
-            } catch (Exception) { }
-            return @default;
-        }
     }
 }

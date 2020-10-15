@@ -76,7 +76,12 @@ namespace AnarchyEngine.DataTypes {
         public static float DistanceSquared(Vector2 a, Vector2 b) => (a - b).MagnitudeSquared;
 
         public static float Dot(Vector2 u, Vector2 v) {
-            return (u.X * v.X) + (u.Y * v.Y);
+            Dot(ref u, ref v, out float result);
+            return result;
+        }
+
+        public static void Dot(ref Vector2 u, ref Vector2 v, out float result) {
+            result = (u.X * v.X) + (u.Y * v.Y);
         }
 
         public static float Angle(Vector2 u, Vector2 v) {
@@ -89,6 +94,30 @@ namespace AnarchyEngine.DataTypes {
         public Vector2 Projection(Vector2 against) => Projection(this, against);
         public static Vector2 Projection(Vector2 self, Vector2 against) {
             return Dot(against, self) / against.MagnitudeSquared * against;
+        }
+
+        public static void Add(in Vector2 left, in Vector2 right, out Vector2 sum) {
+            sum.X = left.X + right.X;
+            sum.Y = left.Y + right.Y;
+        }
+
+        public static void Subtract(in Vector2 left, in Vector2 right, out Vector2 diff) {
+            diff.X = left.X - right.X;
+            diff.Y = left.Y - right.Y;
+        }
+
+        public static void Multiply(in Vector2 left, in Vector2 right, out Vector2 prod) {
+            prod.X = left.X * right.X;
+            prod.Y = left.Y * right.Y;
+        }
+        public static void Multiply(in Vector2 vec, in float scale, out Vector2 prod) {
+            prod.X = vec.X * scale;
+            prod.Y = vec.Y * scale;
+        }
+
+        public static void Divide(in Vector2 left, in float right, out Vector2 quot) {
+            quot.X = left.X / right;
+            quot.Y = left.Y / right;
         }
         #endregion
 

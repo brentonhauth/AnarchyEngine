@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace AnarchyEngine.Core {
     public class Scene : IDisposable {
+        public static Scene Current { get; internal set; }
 
         public readonly string Name;
 
@@ -26,9 +27,7 @@ namespace AnarchyEngine.Core {
         public Entity FindEntityInScene(string name) {
             foreach (Entity e in EntitiesInScene) {
                 var result = e.FindChildByName(name, true);
-                if (result != null) {
-                    return result;
-                }
+                if (result) return result;
             }
             return null;
         }
@@ -56,14 +55,18 @@ namespace AnarchyEngine.Core {
 
         public void Add(params Entity[] entities) {
             if (Started) {
-                foreach (var e in entities) e.Start();
+                foreach (var e in entities) {
+                    e.Start();
+                }
             }
             EntitiesInScene.AddRange(entities);
         }
 
         public void Add(IEnumerable<Entity> entities) {
             if (Started) {
-                foreach (var e in entities) e.Start();
+                foreach (var e in entities) {
+                    e.Start();
+                }
             }
             EntitiesInScene.AddRange(entities);
         }

@@ -11,8 +11,8 @@ namespace AnarchyEngine.Core {
         
         internal Window(string title, int width, int height) : base(width, height, GraphicsMode.Default, title) {
             X = Y = 30;
-            WindowState = WindowState.Fullscreen;
-            World.MainCamera = new Camera(Vector3.One * .25f, (float)width / height);
+            //WindowState = WindowState.Fullscreen;
+            Camera.Main = new Camera(Vector3.One * .25f, (float)width / height);
         }
 
         protected override void OnLoad(EventArgs e) {
@@ -21,7 +21,6 @@ namespace AnarchyEngine.Core {
 
             PhysicsSystem.Init();
             Renderer.Init();
-
             World.Start();
 
             CursorVisible = false;
@@ -42,9 +41,7 @@ namespace AnarchyEngine.Core {
         }
 
         private void PreUpdate(FrameEventArgs e) {
-            Time.DeltaTime = e.Time;
-            Time.TotalTime += (decimal)e.Time;
-            World.Ticks++;
+            Time.Update(e.Time);
             Input.UpdateState();
         }
 
@@ -52,6 +49,8 @@ namespace AnarchyEngine.Core {
             PreUpdate(e);
             // ...
             PhysicsSystem.Update();
+            Scheduler.Update();
+
             World.Update();
 
             /*<temp>*/ if (Input.IsKeyPressed(Key.Escape)) Exit();
@@ -61,7 +60,7 @@ namespace AnarchyEngine.Core {
 
         protected override void OnResize(EventArgs e) {
             GL.Viewport(0, 0, Width, Height);
-            World.MainCamera.AspectRatio = Width / (float)Height;
+            Camera.Main.AspectRatio = Width / (float)Height;
             base.OnResize(e);
         }
 
@@ -73,12 +72,8 @@ namespace AnarchyEngine.Core {
         }
 
         protected override void OnUnload(EventArgs e) {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindVertexArray(0);
-            GL.UseProgram(0);
-
-            World.CurrentScene.Dispose();
-
+            Renderer.PreCleanupBind();
+            World.Dispose();
             base.OnUnload(e);
         }
     }

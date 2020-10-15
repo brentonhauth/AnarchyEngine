@@ -156,14 +156,7 @@ namespace AnarchyEngine.DataTypes {
             }
         }
 
-        public override bool Equals(object obj) {
-            if (!(obj is Matrix4)) return false;
-            var m = (Matrix4)obj;
-            return Row0 == m.Row0 &&
-                   Row1 == m.Row1 &&
-                   Row2 == m.Row2 &&
-                   Row3 == m.Row3;
-        }
+        public override bool Equals(object o) => o is Matrix4 m && this == m;
         public override string ToString() {
             return $"{Row0}\n{Row1}\n{Row2}\n{Row3}";
         }
@@ -213,6 +206,25 @@ namespace AnarchyEngine.DataTypes {
             mat.Row2 *= scale;
             mat.Row3 *= scale;
             return mat;
+        }
+        public static Matrix4 operator +(Matrix4 left, Matrix4 right) {
+            return new Matrix4(
+                left.Row0 + right.Row0,
+                left.Row1 + right.Row1,
+                left.Row2 + right.Row2,
+                left.Row3 + right.Row3);
+        }
+        public static bool operator ==(Matrix4 left, Matrix4 right) {
+            return left.Row0 == right.Row0 &&
+                   left.Row1 == right.Row1 &&
+                   left.Row2 == right.Row2 &&
+                   left.Row3 == right.Row3;
+        }
+        public static bool operator !=(Matrix4 left, Matrix4 right) {
+            return left.Row0 != right.Row0 ||
+                   left.Row1 != right.Row1 ||
+                   left.Row2 != right.Row2 ||
+                   left.Row3 != right.Row3;
         }
     }
 }

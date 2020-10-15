@@ -3,7 +3,8 @@ using AnarchyEngine.ECS;
 using AnarchyEngine.Rendering.Shaders;
 using AnarchyEngine.Rendering.Vertices;
 using OpenTK;
-using OpenTK.Graphics.ES20;
+// using OpenTK.Graphics.ES20;
+using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +12,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AnarchyEngine.Rendering {
-    public static class Renderer {
+    internal static class Renderer {
         public static Camera Camera { get; private set; }
         public static Entity CurrentEntity { get; private set; }
         private static RenderContext CurrentContext, Context;
         private static Queue<RenderContext> Contexts;
 
+        public static event Action ScheduleForInit;
+
         public static void Init() {
             Context = new RenderContext();
             CurrentContext = new RenderContext();
             Contexts = new Queue<RenderContext>();
+            ScheduleForInit?.Invoke();
         }
 
         // Rewrite
@@ -28,7 +32,7 @@ namespace AnarchyEngine.Rendering {
             CurrentEntity = entity;
         }
 
-        public static void Start() => Start(World.MainCamera);
+        public static void Start() => Start(Camera.Main);
 
         public static void Start(Camera camera) {
             Camera = camera;
@@ -78,11 +82,11 @@ namespace AnarchyEngine.Rendering {
                 VertexArray va = ctx.VertexArray;
 
                 ctx.Texture?.Use();//temp
-                va.Bind();
+                va.Use();
                 shader.Use();
                 //<temp>
-                shader.SetVector3("viewPos", World.MainCamera.Front);
-                shader.SetVector3("lightPos", World.MainCamera.Position);
+                shader.SetVector3("viewPos", Camera.Main.Front);
+                shader.SetVector3("lightPos", Camera.Main.Position);
                 //</temp>
                 shader.SetMatrix4(Shader.ModelName, ctx.Transform);
                 shader.SetMatrix4(Shader.ViewProjectionName, ctx.ViewProjection);
@@ -100,6 +104,12 @@ namespace AnarchyEngine.Rendering {
 
         public static void Draw(VertexArray va) {
             GL.DrawArrays(PrimitiveType.Triangles, 0, va.Count);
+        }
+
+        public static void PreCleanupBind() {
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindVertexArray(0);
+            GL.UseProgram(0);
         }
     }
 }
