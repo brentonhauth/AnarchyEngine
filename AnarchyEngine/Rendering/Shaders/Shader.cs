@@ -35,7 +35,7 @@ namespace AnarchyEngine.Rendering.Shaders {
             UniformLocations = new Dictionary<string, int>();
             this.vertPath = vertPath;
             this.fragPath = fragPath;
-            Renderer.ScheduleForInit += Init;
+            // Renderer.ScheduleForInit += Init;
         }
 
         public void Init() {

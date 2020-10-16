@@ -80,7 +80,6 @@ namespace AnarchyEngine.Rendering.Mesh {
         public void Init() {
             if (VertexArray != null) return;
             VertexArray = new VertexArray();
-            Texture?.Init();
             IEnumerable<float> raws;
 
             bool hasPosition = HasProperty(VertexProperty.Position),

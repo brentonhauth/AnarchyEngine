@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AnarchyEngine.DataTypes;
 using AnarchyEngine.Rendering.Shaders;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
@@ -14,7 +15,7 @@ namespace AnarchyEngine.Rendering {
         private Dictionary<string, Texture> Textures = new Dictionary<string, Texture>();
         private bool Initialized = false;
         public Shader Shader { get; set; } = Shader.Default;
-        public Color4 Color { get; set; } = Color4.Transparent;
+        public Color Color { get; set; } = Color.White;
 
         // static Material() { }
 
@@ -44,6 +45,11 @@ namespace AnarchyEngine.Rendering {
         internal void ApplyToShader(Shader shader) {
             ApplyTexturesToShader(shader);
             ApplyColorToShader(shader);
+        }
+
+        internal void ApplyShader() {
+            ApplyTexturesToShader(Shader);
+            ApplyColorToShader(Shader);
         }
 
         private void ApplyTexturesToShader(Shader shader) {

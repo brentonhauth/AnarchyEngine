@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace AnarchyEngine.Rendering {
     internal struct RenderContext {
+        public string Name { get; set; }
         public Matrix4 Transform { get; set; }
         public Matrix4 ViewProjection { get; set; }
         public VertexArray VertexArray { get; set; }

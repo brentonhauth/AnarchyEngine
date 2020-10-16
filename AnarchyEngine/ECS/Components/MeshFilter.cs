@@ -25,14 +25,19 @@ namespace AnarchyEngine.ECS.Components {
         }
 
         public override void Init() {
-            Material = Material ?? Material.Default;
+            /// FIXME: Quick fix to correct "disappearing wolf" bug
+            if (Initialized || Mesh.VertexArray != null) return;
 
+            base.Init();
+            Material = Material ?? Material.Default;
+            Material.Shader.Init();
             Mesh.Init();
             Mesh.VertexArray.Bind(Material.Shader);
         }
 
         public override void Start() {
-            //VertexArray va = Mesh.VertexArray;
+            base.Start();
+            // VertexArray va = Mesh.VertexArray;
             // va.Bind(Material.Shader);
         }
 
@@ -42,10 +47,12 @@ namespace AnarchyEngine.ECS.Components {
                 Renderer.Push(Mesh.Texture);
                 //Renderer.Push("texture0", 1);
             }*/
-            VertexArray va = (Mesh as Mesh)?.VertexArray ?? null;
-            
+            if ((Time.Ticks % 90) == 0) {
+                var data = Mesh.VertexArray.VertexBuffer.Data;
+                //Entity.DebugCallIf("WOLF_ENTITY", $".MeshFilter.Render() -> {data.Length}");
+            }
 
-            Renderer.Push(Mesh.Shader, va, Material, Entity.Transform);
+            Renderer.Push(Entity.Name, Material, Mesh.VertexArray, (OpenTK.Matrix4)Entity.Transform);
             Renderer.Submit();
         }
     }

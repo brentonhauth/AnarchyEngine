@@ -7,9 +7,11 @@ using OpenTK.Graphics.OpenGL4;
 namespace AnarchyEngine.Rendering.Vertices {
     internal class VertexArray : IPipable {
 
-        public int Handle { get; private set; }
+        public int Handle { get; private set; } = 0;
         public VertexBuffer VertexBuffer { get; private set; }
         
+        public bool Initialized { get; private set; }
+
         private List<VertexArrayDataModel> DataModels;
 
         private Shader Shader;
@@ -25,6 +27,10 @@ namespace AnarchyEngine.Rendering.Vertices {
             DataModels = new List<VertexArrayDataModel>();
         }
 
+        ~VertexArray() {
+            Console.WriteLine($"~VertexArray() -> {Handle}");
+        }
+
         public void AddVertexBuffer(VertexBuffer vb) {
             VertexBuffer = vb;
         }
@@ -37,8 +43,9 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         public void Init() {
             if (VertexBuffer == null)
-                AddVertexBuffer(new float[0]);
-
+                throw new Exception("No VertexBuffer");
+            //AddVertexBuffer(new float[0]);
+            Initialized = true;
             VertexBuffer.Init();
             Handle = GL.GenVertexArray();
             Use();
@@ -58,7 +65,10 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         public void Use() => GL.BindVertexArray(Handle);
 
-        public void Dispose() => GL.DeleteVertexArray(Handle);
+        public void Dispose() {
+            Console.WriteLine($"VertexArray.Dispose -> {Handle}");
+            GL.DeleteVertexArray(Handle);
+        }
 
         //public void AddData(IEnumerable<float> data) => Data.AddRange(data);
         // public void AddData(float data) => Data.Add(data);

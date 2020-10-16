@@ -30,10 +30,10 @@ namespace AnarchyEngine.Core {
 
         protected override void OnRenderFrame(FrameEventArgs e) {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
+            
             Renderer.Start();
             World.Render();
-            Renderer.Finish();
+            Renderer.Finish2();
 
             SwapBuffers();
 
@@ -73,6 +73,7 @@ namespace AnarchyEngine.Core {
 
         protected override void OnUnload(EventArgs e) {
             Renderer.PreCleanupBind();
+            Console.WriteLine("Window.OnUnload");
             World.Dispose();
             base.OnUnload(e);
         }

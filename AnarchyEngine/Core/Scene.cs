@@ -1,5 +1,6 @@
 ﻿using AnarchyEngine.DataTypes;
 using AnarchyEngine.ECS;
+using AnarchyEngine.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace AnarchyEngine.Core {
 
         public Entity FindEntityInScene(string name) {
             foreach (Entity e in EntitiesInScene) {
+                if (name == e.Name) return e;
                 var result = e.FindChildByName(name, true);
                 if (result) return result;
             }
@@ -78,8 +80,9 @@ namespace AnarchyEngine.Core {
         public void Add(IEnumerable<IUpdatable> updatables) => Updatables.AddRange(updatables);
 
         public void Remove(Entity entity) {
-            EntitiesInScene.Remove(entity);
-            entity.Dispose();
+            entity.DebugCallIf("WOLF_ENTITY", " << Scene.Remove()");
+            EntitiesInScene.RemoveAll(e => e.Id == entity.Id);
+            // entity.Dispose();
         }
 
         public void Dispose() => EntitiesInScene.ForEach(e => e.Dispose());

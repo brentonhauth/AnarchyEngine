@@ -8,12 +8,16 @@ namespace AnarchyEngine.Rendering.Vertices {
         public int Handle { get; private set; }
         public int Count => Data?.Length ?? 0;
 
-        private float[] Data;
+        public float[] Data { get; private set; }
 
         public VertexBuffer() { }
 
         public VertexBuffer(float[] data) {
             Data = data;
+        }
+
+        ~VertexBuffer() {
+            Console.WriteLine($"~VertexBuffer() -> {Handle}");
         }
 
         public void Init() {
@@ -33,6 +37,9 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         public void Use() => GL.BindBuffer(BufferTarget.ArrayBuffer, Handle);
 
-        public void Dispose() => GL.DeleteBuffer(Handle);
+        public void Dispose() {
+            Console.WriteLine($"VertexBuffer.Dispose -> {Handle}");
+            // GL.DeleteBuffer(Handle);
+        }
     }
 }

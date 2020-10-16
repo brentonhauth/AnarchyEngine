@@ -33,5 +33,5 @@ void main() {
 
     vec3 result = (ambient + diffuse + specular) * tex;
 	
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4((result + uColor) * 0.5, 1.0);
 }

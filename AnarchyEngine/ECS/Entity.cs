@@ -46,6 +46,8 @@ namespace AnarchyEngine.ECS {
             AllEntities.Add(this);
         }
 
+        ~Entity() => DebugCallIf("WOLF_ENTITY", "~Entity()");
+
         public T GetComponent<T>() where T : Component {
             return Components.AsParallel().FirstOrDefault(c => c is T) as T;
         }
@@ -64,6 +66,12 @@ namespace AnarchyEngine.ECS {
             component.AppendTo(this);
             Events.RaiseAddedComponent(component);
             Components.Add(component);
+        }
+
+        public void DebugCallIf(string name, string log) {
+            if (name == Name) {
+                Console.WriteLine($"{name}::{log}");
+            }
         }
 
         public T AddComponent<T>() where T : Component {
@@ -117,12 +125,14 @@ namespace AnarchyEngine.ECS {
 
         public override void Init() {
             base.Init();
+            DebugCallIf("WOLF_ENTITY", "Init()");
             Components.ForEach(c => c.Init());
             Children.ForEach(e => e.Init());
         }
 
         public override void Start() {
             base.Start();
+            DebugCallIf("WOLF_ENTITY", "Start()");
             Components.ForEach(c => c.Start());
             Children.ForEach(e => e.Start());
         }
@@ -148,11 +158,14 @@ namespace AnarchyEngine.ECS {
         }
 
         public override void Dispose() {
+            DebugCallIf("WOLF_ENTITY", "Dispose()");
             Components.ForEach(c => c.Dispose());
             Children.ForEach(e => e.Dispose());
         }
 
-        public static implicit operator bool(Entity entity) => entity != null;
+        public override string ToString() {
+            return $"Entity: ({Id}, {Name})";
+        }
 
         #region EntityEvents
         internal class EntityEvents {
