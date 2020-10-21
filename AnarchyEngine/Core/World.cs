@@ -9,9 +9,7 @@ using System.Threading.Tasks;
 namespace AnarchyEngine.Core {
     public static class World {
         public static Window Window { get; private set; }
-
-        public static Camera MainCamera { get; internal set; }
-
+        
         private static Dictionary<string, Scene> Scenes = new Dictionary<string, Scene>(0);
 
         public static ulong Ticks { get; internal set; } = 0;

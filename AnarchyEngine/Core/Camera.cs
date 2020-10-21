@@ -13,11 +13,12 @@ namespace AnarchyEngine.Core {
 
         public static Camera Main { get; internal set; }
 
-        private bool _firstMove = true;
-        private Vector2 _lastPos;
-        private float m_pitch,
+        private float m_pitch = 0,
+            m_aspectRatio = 0,
             m_yaw = -Maths.HalfPi,
             m_fov = Maths.HalfPi;
+
+        private Matrix4 m_perspective = Matrix4.Identity;
 
         public Camera(Vector3 position, float aspectRatio) {
             Position = position;
@@ -25,7 +26,13 @@ namespace AnarchyEngine.Core {
         }
 
         public Vector3 Position { get; set; }
-        public float AspectRatio { get; set; }
+        public float AspectRatio {
+            get => m_aspectRatio;
+            set {
+                m_aspectRatio = value;
+                UpdatePerspective();
+            }
+        }
 
         public Vector3 Right { get; private set; } = Vector3.UnitX;
         public Vector3 Up { get; private set; } = Vector3.UnitY;
@@ -33,8 +40,7 @@ namespace AnarchyEngine.Core {
 
         public Matrix4 View =>
             DataTypes.Matrix4.LookAt(Position, Position + Front, Up);
-        public Matrix4 Projection =>
-           Matrix4.CreatePerspectiveFieldOfView(m_fov, AspectRatio, .01f, 100f);
+        public Matrix4 Projection => m_perspective;
 
         public Matrix4 ViewProjection => View * Projection;
 
@@ -61,6 +67,7 @@ namespace AnarchyEngine.Core {
                 var angle = Maths.Clamp(value, 1f, 45f);
                 m_fov = Maths.Deg2Rad(angle);
                 UpdateVectors();
+                UpdatePerspective();
             }
         }
 
@@ -73,6 +80,14 @@ namespace AnarchyEngine.Core {
             Front = Front.Normalized;
             Right = Vector3.Cross(Front, Vector3.UnitY).Normalized;
             Up = Vector3.Cross(Right, Front).Normalized;
+        }
+
+        private void UpdatePerspective() {
+            m_perspective = Matrix4.CreatePerspectiveFieldOfView(
+                fovy: m_fov,
+                aspect: AspectRatio,
+                zNear: .01f,
+                zFar: 100f);
         }
 
         public void Start() {
@@ -89,40 +104,6 @@ namespace AnarchyEngine.Core {
 
 
         public void Update() {
-            const float sensitivity = .3f;
-
-            float cameraSpeed = (Input.IsKeyDown(Key.LeftCtrl) ? 4f : 2f) * Time.DeltaTime;
-            
-
-            if (Input.IsKeyDown(Key.W))
-                Position += Front * cameraSpeed; // Forward 
-            if (Input.IsKeyDown(Key.S))
-                Position -= Front * cameraSpeed;
-            if (Input.IsKeyDown(Key.A))
-                Position -= Right * cameraSpeed;
-            if (Input.IsKeyDown(Key.D))
-                Position += Right * cameraSpeed;
-            if (Input.IsKeyDown(Key.Space))
-                Position += Up * cameraSpeed;
-            if (Input.IsKeyDown(Key.LeftShift))
-                Position -= Up * cameraSpeed;
-
-            var mouse = Mouse.GetState();
-
-            if (_firstMove) {
-                _lastPos = new Vector2(mouse.X, mouse.Y);
-                _firstMove = false;
-            } else {
-                var deltaX = mouse.X - _lastPos.X;
-                var deltaY = mouse.Y - _lastPos.Y;
-                var newPos = new Vector2(mouse.X, mouse.Y);
-                if (newPos != _lastPos) {
-                    Yaw += deltaX * sensitivity;
-                    Pitch -= deltaY * sensitivity;
-                    _lastPos = newPos;
-                }
-
-            }
         }
     }
 }

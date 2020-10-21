@@ -1,4 +1,5 @@
 ﻿using OpenTK.Input;
+using AnarchyEngine.DataTypes;
 
 namespace AnarchyEngine.Core {
     public static class Input {
@@ -13,8 +14,10 @@ namespace AnarchyEngine.Core {
             CurrentKeyboardState = Keyboard.GetState();
         }
 
-
-        public static void SetMousePosition(float x, float y) => Mouse.SetPosition(x, y);
+        public static Vector2 MousePosition {
+            get => new Vector2(CurrentMouseState.X, CurrentMouseState.Y);
+            set => Mouse.SetPosition(value.X, value.Y);
+        }
 
         public static bool IsKeyDown(Key key) => CurrentKeyboardState.IsKeyDown((OpenTK.Input.Key)key);
 

@@ -86,6 +86,46 @@ namespace AnarchyRunner {
                 }
             });
 
+            Vector2 _lastPos = Vector2.Zero;
+            bool _firstMove = true;
+
+            scene.Add(new Updatable {
+                OnUpdate = () => {
+
+                    const float sensitivity = .3f;
+                    var c = Camera.Main;
+
+                    float cameraSpeed = (Input.IsKeyDown(Key.LeftCtrl) ? 4f : 2f) * Time.DeltaTime;
+
+
+                    if (Input.IsKeyDown(Key.W))
+                        c.Position += c.Front * cameraSpeed; // Forward 
+                    if (Input.IsKeyDown(Key.S))
+                        c.Position -= c.Front * cameraSpeed;
+                    if (Input.IsKeyDown(Key.A))
+                        c.Position -= c.Right * cameraSpeed;
+                    if (Input.IsKeyDown(Key.D))
+                        c.Position += c.Right * cameraSpeed;
+                    if (Input.IsKeyDown(Key.Space))
+                        c.Position += c.Up * cameraSpeed;
+                    if (Input.IsKeyDown(Key.LeftShift))
+                        c.Position -= c.Up * cameraSpeed;
+
+                    var mouse = Input.MousePosition;
+
+                    if (_firstMove) {
+                        _lastPos = mouse;
+                        _firstMove = false;
+                    } else if (mouse != _lastPos) {
+                        var delta = mouse - _lastPos;
+                        c.Yaw += delta.X * sensitivity;
+                        c.Pitch -= delta.Y * sensitivity;
+                        _lastPos = mouse;
+                    }
+                }
+
+            });
+
             World.AddScene(scene);
             World.Run("yee", 1000, 640);
         }
