@@ -12,8 +12,6 @@ namespace AnarchyEngine.Core {
 
         public static Camera MainCamera { get; internal set; }
 
-        // public static Scene CurrentScene { get; private set; }
-
         private static Dictionary<string, Scene> Scenes = new Dictionary<string, Scene>(0);
 
         public static ulong Ticks { get; internal set; } = 0;

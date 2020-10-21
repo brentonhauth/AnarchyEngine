@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +36,6 @@ namespace AnarchyRunner {
             int y = 67;
             Utilities.Swap(ref x, ref y);
             Console.WriteLine($"x: {x}, y: {y}");*/
-            Console.ReadKey();
         }
 
         private static void ThrowCubesDemo() {
@@ -66,9 +66,7 @@ namespace AnarchyRunner {
             //var secondWolf = SpawnWolf(); secondWolf.Transform.Position += Vector3.UnitY * 2; scene.Add(secondWolf);
 
             Queue<Entity> cubes = new Queue<Entity>();
-
-            bool pressedQ = false, pressedF = false;
-
+            
             scene.Add(new Updatable {
                 OnUpdate = () => {
                     
@@ -77,21 +75,13 @@ namespace AnarchyRunner {
                         var entity = AddBox((1.1f * cam.Front) + cam.Position, cam.Front * 5f, null);
                         scene.Add(entity);
                         cubes.Enqueue(entity);
-                        if (pressedQ) {
-                            pressedF = true;
-                        }
                     }
                     if (Input.IsKeyPressed(Key.Q)) {
-                        pressedQ = true;
                         while (cubes.Count > 0) {
                             using (var cube = cubes.Dequeue()) {
                                 scene.Remove(cube);
                             }
                         }
-                    }
-
-                    if ((Time.Ticks % 30) == 0) {
-                        //Console.WriteLine("Wolf -> " + scene.FindEntityInScene("WOLF_ENTITY"));
                     }
                 }
             });

@@ -33,7 +33,7 @@ namespace AnarchyEngine.Core {
             
             Renderer.Start();
             World.Render();
-            Renderer.Finish2();
+            Renderer.Finish();
 
             SwapBuffers();
 
@@ -73,7 +73,6 @@ namespace AnarchyEngine.Core {
 
         protected override void OnUnload(EventArgs e) {
             Renderer.PreCleanupBind();
-            Console.WriteLine("Window.OnUnload");
             World.Dispose();
             base.OnUnload(e);
         }

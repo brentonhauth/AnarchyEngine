@@ -22,6 +22,7 @@ namespace AnarchyEngine.Rendering.Shaders {
         public static readonly Shader Default = new Shader($"{_shaderLoc}shader.vert", $"{_shaderLoc}shader.frag");
 
         public int Handle { get; private set; }
+        private static int CurrentlyInUse = 0;
 
         private readonly Dictionary<string, int> UniformLocations;
 
@@ -96,27 +97,35 @@ namespace AnarchyEngine.Rendering.Shaders {
             }
         }
 
-        public void Use() => GL.UseProgram(Handle);
+        public void Use() {
+            if (Handle != CurrentlyInUse) {
+                GL.UseProgram(CurrentlyInUse = Handle);
+            }
+        }
 
         public int GetAttribLocation(string attr) => GL.GetAttribLocation(Handle, attr);
 
         public void SetInt(string name, int data) {
-            Use();
+            // Use();
             GL.Uniform1(LocateUniform(name), data);
         }
 
         public void SetFloat(string name, float data) {
-            Use();
+            // Use();
             GL.Uniform1(LocateUniform(name), data);
         }
 
-        public void SetMatrix4(string name, Matrix4 data) {
-            Use();
+        public void SetMatrix4(string name, Matrix4 data) => SetMatrix4(name, ref data);
+
+        public void SetMatrix4(string name, ref Matrix4 data) {
+            // Use();
             GL.UniformMatrix4(LocateUniform(name), true, ref data);
         }
 
-        public void SetVector3(string name, Vector3 data) {
-            Use();
+        public void SetVector3(string name, Vector3 data) => SetVector3(name, ref data);
+
+        public void SetVector3(string name, ref Vector3 data) {
+            // Use();
             GL.Uniform3(LocateUniform(name), ref data);
         }
 

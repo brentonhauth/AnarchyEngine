@@ -9,6 +9,8 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         public int Handle { get; private set; } = 0;
         public VertexBuffer VertexBuffer { get; private set; }
+
+        private static int CurrentlyInUse = 0;
         
         public bool Initialized { get; private set; }
 
@@ -63,7 +65,11 @@ namespace AnarchyEngine.Rendering.Vertices {
             DataModels.Add(data);
         }
 
-        public void Use() => GL.BindVertexArray(Handle);
+        public void Use() {
+            if (Handle != CurrentlyInUse) {
+                GL.BindVertexArray(CurrentlyInUse = Handle);
+            }
+        }
 
         public void Dispose() {
             Console.WriteLine($"VertexArray.Dispose -> {Handle}");

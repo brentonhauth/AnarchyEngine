@@ -16,8 +16,8 @@ namespace AnarchyEngine.Core {
         private bool _firstMove = true;
         private Vector2 _lastPos;
         private float m_pitch,
-            m_yaw = -MathHelper.PiOver2,
-            m_fov = MathHelper.PiOver2;
+            m_yaw = -Maths.HalfPi,
+            m_fov = Maths.HalfPi;
 
         public Camera(Vector3 position, float aspectRatio) {
             Position = position;
@@ -32,50 +32,39 @@ namespace AnarchyEngine.Core {
         public Vector3 Front { get; private set; } = -Vector3.UnitZ;
 
         public Matrix4 View =>
-            Matrix4.LookAt(Position, Position + Front, Up);
+            DataTypes.Matrix4.LookAt(Position, Position + Front, Up);
         public Matrix4 Projection =>
-            Matrix4.CreatePerspectiveFieldOfView(m_fov, AspectRatio, .01f, 100f);
+           Matrix4.CreatePerspectiveFieldOfView(m_fov, AspectRatio, .01f, 100f);
 
         public Matrix4 ViewProjection => View * Projection;
 
         public float Pitch {
-            get => MathHelper.RadiansToDegrees(m_pitch);
+            get => Maths.Rad2Deg(m_pitch);
             set {
                 var angle = Maths.Clamp(value, -89f, 89f);
-                m_pitch = MathHelper.DegreesToRadians(angle);
+                m_pitch = Maths.Deg2Rad(angle);
                 UpdateVectors();
             }
         }
         
         public float Yaw {
-            get => MathHelper.RadiansToDegrees(m_yaw);
+            get => Maths.Rad2Deg(m_yaw);
             set {
-                m_yaw = MathHelper.DegreesToRadians(value);
+                m_yaw = Maths.Deg2Rad(value);
                 UpdateVectors();
             }
         }
 
         public float Fov {
-            get => MathHelper.RadiansToDegrees(m_fov);
+            get => Maths.Rad2Deg(m_fov);
             set {
                 var angle = Maths.Clamp(value, 1f, 45f);
-                m_fov = MathHelper.DegreesToRadians(angle);
+                m_fov = Maths.Deg2Rad(angle);
                 UpdateVectors();
             }
         }
 
-        public Matrix4 GetViewMatrix() {
-            return Matrix4.LookAt(Position, Position + Front, Up);
-        }
-        
-        public Matrix4 GetProjectionMatrix() {
-            Matrix4.CreatePerspectiveFieldOfView(m_fov, AspectRatio, .01f, 100f, out Matrix4 m);
-            return m;
-        }
-
         private void UpdateVectors() {
-            //Game.SkyBox = ColorHelper.RandColor;
-            // First the front matrix is calculated using some basic trigonometry
             //m_front.X = Maths.Cos(m_pitch) * Maths.Cos(m_yaw);
             //m_front.Y = Maths.Sin(m_pitch);
             //m_front.Z = Maths.Cos(m_pitch) * Maths.Sin(m_yaw);

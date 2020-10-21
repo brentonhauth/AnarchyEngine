@@ -156,6 +156,22 @@ namespace AnarchyEngine.DataTypes {
             }
         }
 
+        public static Matrix4 LookAt(Vector3 eye, Vector3 at, Vector3 up) {
+            Vector3 z = (eye - at).Normalized,
+                    x = Vector3.Cross(up, z).Normalized,
+                    y = Vector3.Cross(z, x).Normalized;
+
+            Vector3.Dot(ref x, ref eye, out var mx);
+            Vector3.Dot(ref y, ref eye, out var my);
+            Vector3.Dot(ref z, ref eye, out var mz);
+
+            return new Matrix4(
+                x.X, y.X, z.X, 0,
+                x.Y, y.Y, z.Y, 0,
+                x.Z, y.Z, z.Z, 0,
+                -mx, -my, -mz, 1);
+        }
+
         public override bool Equals(object o) => o is Matrix4 m && this == m;
         public override string ToString() {
             return $"{Row0}\n{Row1}\n{Row2}\n{Row3}";

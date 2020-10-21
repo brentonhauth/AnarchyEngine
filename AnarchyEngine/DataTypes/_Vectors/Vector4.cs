@@ -115,7 +115,7 @@ namespace AnarchyEngine.DataTypes {
 
             umag *= vmag;
             double acos = Math.Acos(Dot(u, v) / umag);
-            return (float)(180.0 / Math.PI * acos);
+            return Maths.Rad2Deg((float)acos);
         }
 
         public Vector4 Projection(Vector4 against) => Projection(this, against);

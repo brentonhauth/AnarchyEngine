@@ -86,12 +86,16 @@ namespace AnarchyEngine.DataTypes {
         }
         public static float Distance(Vector3 u, Vector3 v) => (u - v).Magnitude;
         public static float DistanceSquared(Vector3 point, Vector3 lineStart, Vector3 lineEnd) {
-            Vector3 AP = lineStart - point,
-                AB = lineEnd - lineStart,
-                proj = Projection(AP, AB); // Projection of AP on AB
+            Subtract(lineStart, point, out Vector3 AP);
+            Subtract(lineEnd, lineStart, out Vector3 AB);
+            Vector3 proj = Projection(AP, AB); // Projection of AP on AB
             return (AB - proj).MagnitudeSquared;
         }
         public static float DistanceSquared(Vector3 u, Vector3 v) => (u - v).MagnitudeSquared;
+
+        public static bool WithinRange(Vector3 u, Vector3 v, float range) {
+            return DistanceSquared(u, v) <= range * range;
+        }
 
         public static float Dot(Vector3 u, Vector3 v) {
             Dot(ref u, ref v, out float result);
@@ -112,7 +116,7 @@ namespace AnarchyEngine.DataTypes {
             float magx = u.Magnitude * v.Magnitude;
             if (magx == 0) return 0f;
             double acos = Math.Acos(Dot(u, v) / magx);
-            return (float)(180.0 / Math.PI * acos);
+            return Maths.Rad2Deg((float)acos);
         }
         
         public Vector3 Projection(Vector3 against) => Projection(this, against);

@@ -46,8 +46,6 @@ namespace AnarchyEngine.ECS {
             AllEntities.Add(this);
         }
 
-        ~Entity() => DebugCallIf("WOLF_ENTITY", "~Entity()");
-
         public T GetComponent<T>() where T : Component {
             return Components.AsParallel().FirstOrDefault(c => c is T) as T;
         }
@@ -66,12 +64,6 @@ namespace AnarchyEngine.ECS {
             component.AppendTo(this);
             Events.RaiseAddedComponent(component);
             Components.Add(component);
-        }
-
-        public void DebugCallIf(string name, string log) {
-            if (name == Name) {
-                Console.WriteLine($"{name}::{log}");
-            }
         }
 
         public T AddComponent<T>() where T : Component {
@@ -117,34 +109,42 @@ namespace AnarchyEngine.ECS {
         }
 
         public static Entity FindByName(string name) {
-            if (Scene.Current == null) {
-                return null;
-            }
-            return Scene.Current.FindEntityInScene(name);
+            return Scene.Current?.FindEntityInScene(name);
         }
 
         public override void Init() {
             base.Init();
-            DebugCallIf("WOLF_ENTITY", "Init()");
-            Components.ForEach(c => c.Init());
-            Children.ForEach(e => e.Init());
+            int i = 0;
+            for (; i < Components.Count; i++)
+                Components[i].Init();
+            for (i = 0; i < Children.Count; i++)
+                Children[i].Init();
         }
 
         public override void Start() {
             base.Start();
-            DebugCallIf("WOLF_ENTITY", "Start()");
-            Components.ForEach(c => c.Start());
-            Children.ForEach(e => e.Start());
+            int i = 0;
+            for (; i < Components.Count; i++)
+                Components[i].Start();
+            for (i = 0; i < Children.Count; i++)
+                Children[i].Start();
         }
 
         public override void Render() {
-            Components.ForEach(c => c.Render());
-            Children.ForEach(e => e.Render());
+            int i = 0;
+            for (; i < Components.Count; i++)
+                Components[i].Render();
+            for (i = 0; i < Children.Count; i++)
+                Children[i].Render();
         }
 
         public override void Update() {
-            Components.ForEach(c => c.Update());
-            Children.ForEach(e => e.Update());
+            int i = 0;
+            for (; i < Components.Count; i++)
+                Components[i].Update();
+            for (i = 0; i < Children.Count; i++)
+                Children[i].Update();
+
         }
 
         public void SetParent(Entity entity) {
@@ -158,9 +158,11 @@ namespace AnarchyEngine.ECS {
         }
 
         public override void Dispose() {
-            DebugCallIf("WOLF_ENTITY", "Dispose()");
-            Components.ForEach(c => c.Dispose());
-            Children.ForEach(e => e.Dispose());
+            int i = 0;
+            for (; i < Components.Count; i++)
+                Components[i].Dispose();
+            for (i = 0; i < Children.Count; i++)
+                Children[i].Dispose();
         }
 
         public override string ToString() {
@@ -178,7 +180,7 @@ namespace AnarchyEngine.ECS {
 
             internal void RaiseAddedComponent(Component c) => AddedComponent?.Invoke(c);
             internal void RaiseUpdatePosition(ref Vector3 p) => UpdatePosition?.Invoke(p);
-            internal void RaiseUpdateScale(ref Vector3 s) => UpdatePosition?.Invoke(s);
+            internal void RaiseUpdateScale(ref Vector3 s) => UpdateScale?.Invoke(s);
             internal void RaiseUpdateRotation(ref OpenTK.Quaternion q) => UpdateRotation?.Invoke(q);
         }
         #endregion

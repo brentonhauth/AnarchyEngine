@@ -88,7 +88,7 @@ namespace AnarchyEngine.DataTypes {
             float magx = u.Magnitude * v.Magnitude;
             if (magx == 0) return 0f;
             double acos = Math.Acos(Dot(u, v) / magx);
-            return (float)(180.0 / Math.PI * acos);
+            return Maths.Rad2Deg((float)acos);
         }
 
         public Vector2 Projection(Vector2 against) => Projection(this, against);

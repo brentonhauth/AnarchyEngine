@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 namespace AnarchyEngine.Util {
     public static class Maths {
 
+        public const float Pi = (float)Math.PI;
+        public const float HalfPi = Pi * .5f;
+        public const float PiOver180 = Pi / 180f;
+
         public static readonly Random Rng = new Random(Time.EpochNow);
 
         public static int Clamp(int n, int min, int max) => Math.Max(min, Math.Min(n, max));
@@ -75,6 +79,10 @@ namespace AnarchyEngine.Util {
         public static float Tan(float a) => (float)Math.Tan(a);
 
         public static float Sqrt(float a) => (float)Math.Sqrt(a);
+
+        public static float Rad2Deg(float r) => r * (180f / Pi);
+
+        public static float Deg2Rad(float d) => d * PiOver180;
 
         // May remove
         public static Vector3 CalculateFront(float pitch, float yaw) {

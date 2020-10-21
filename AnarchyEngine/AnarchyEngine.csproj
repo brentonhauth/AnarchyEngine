@@ -72,7 +72,6 @@
     <Compile Include="DataTypes\_Matrices\Matrix2.cs" />
     <Compile Include="DataTypes\_Matrices\Matrix3.cs" />
     <Compile Include="DataTypes\_Matrices\Matrix4.cs" />
-    <Compile Include="DataTypes\_Matrices\Matrix4x3.cs" />
     <Compile Include="DataTypes\_Vectors\Vector2.cs" />
     <Compile Include="DataTypes\_Vectors\Vector3.cs" />
     <Compile Include="DataTypes\_Vectors\Vector4.cs" />

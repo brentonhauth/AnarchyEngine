@@ -1,11 +1,7 @@
 ﻿using AnarchyEngine.DataTypes;
 using AnarchyEngine.ECS;
-using AnarchyEngine.Rendering;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AnarchyEngine.Core {
     public class Scene : IDisposable {
@@ -36,18 +32,27 @@ namespace AnarchyEngine.Core {
         
         public void Start() {
             Started = true;
-            EntitiesInScene.ForEach(e => e.Start());
-            Updatables.ForEach(u => u.Start());
+            int i = 0;
+            for (; i < EntitiesInScene.Count; i++)
+                EntitiesInScene[i].Start();
+            for (i = 0; i < Updatables.Count; i++)
+                Updatables[i].Start();
         }
 
         public void Render() {
-            EntitiesInScene.ForEach(e => e.Render());
-            Updatables.ForEach(u => u.Render());
+            int i = 0;
+            for (; i < EntitiesInScene.Count; i++)
+                EntitiesInScene[i].Render();
+            for (i = 0; i < Updatables.Count; i++)
+                Updatables[i].Render();
         }
 
         public void Update() {
-            EntitiesInScene.ForEach(e => e.Update());
-            Updatables.ForEach(u => u.Update());
+            int i = 0;
+            for (; i < EntitiesInScene.Count; i++)
+                EntitiesInScene[i].Update();
+            for (i = 0; i < Updatables.Count; i++)
+                Updatables[i].Update();
         }
 
         public void Add(Entity entity) {
@@ -80,8 +85,7 @@ namespace AnarchyEngine.Core {
         public void Add(IEnumerable<IUpdatable> updatables) => Updatables.AddRange(updatables);
 
         public void Remove(Entity entity) {
-            entity.DebugCallIf("WOLF_ENTITY", " << Scene.Remove()");
-            EntitiesInScene.RemoveAll(e => e.Id == entity.Id);
+            EntitiesInScene.Remove(entity);
             // entity.Dispose();
         }
 

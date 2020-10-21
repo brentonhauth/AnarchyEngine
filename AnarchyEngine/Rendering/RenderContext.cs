@@ -10,14 +10,10 @@ using System.Threading.Tasks;
 
 namespace AnarchyEngine.Rendering {
     internal struct RenderContext {
-        public string Name { get; set; }
-        public Matrix4 Transform { get; set; }
-        public Matrix4 ViewProjection { get; set; }
-        public VertexArray VertexArray { get; set; }
-        public Texture Texture { get; set; }
-        public Shader Shader { get; set; }
-        public Material Material { get; set; }
-        public Dictionary<string, RenderContextExtra> Extras;
+        public Matrix4 Transform;
+        public VertexArray VertexArray;
+        public Material Material;
+        // public Dictionary<string, RenderContextExtra> Extras;
     }
 
     internal struct RenderContextExtra {
