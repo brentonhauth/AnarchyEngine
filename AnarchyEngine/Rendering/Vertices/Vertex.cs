@@ -15,16 +15,12 @@ namespace AnarchyEngine.Rendering.Vertices {
         All = Position | Normal | UV
     }
 
-    public struct Vertex /*: MIConvexHull.IVertex*/ {
+    public struct Vertex : IEquatable<Vertex> /*MIConvexHull.IVertex*/ {
 
-        public static int Stride(VertexProperty property) {
-            bool hasUV = (property & VertexProperty.UV) == VertexProperty.UV,
-                hasPos = (property & VertexProperty.Position) == VertexProperty.Position,
-                hasNorm = (property & VertexProperty.Normal) == VertexProperty.Normal;
-
-            return (hasUV ? 2 : 0) +
-                (hasPos ? 3 : 0) +
-                (hasNorm ? 3 : 0);
+        public static int Stride(VertexProperty p) {
+            return ((p & VertexProperty.UV) == VertexProperty.UV ? 2 : 0) +
+                ((p & VertexProperty.Position) == VertexProperty.Position ? 3 : 0) +
+                ((p & VertexProperty.Normal) == VertexProperty.Normal ? 3 : 0);
         }
 
         public Vector3 Position;
@@ -52,6 +48,32 @@ namespace AnarchyEngine.Rendering.Vertices {
         public Vertex(Vector3 position, Vector3 normal) : this(position, normal, Vector2.Zero) { }
 
         public Vertex(Vector3 position) : this(position, Vector3.Zero) { }
+
+        public float[] OnlyRaw(VertexProperty props) => OnlyRaw(Stride(props));
+
+        public float[] OnlyRaw(int stride) {
+            var raw = new float[stride];
+            int i = 0;
+
+            if (stride >= 3) {
+                raw[i++] = Position.X;
+                raw[i++] = Position.Y;
+                raw[i++] = Position.Z;
+            }
+            if (stride >= 6) {
+                raw[i++] = Normal.X;
+                raw[i++] = Normal.Y;
+                raw[i++] = Normal.Z;
+            }
+            if (stride >= 8) {
+                raw[i++] = UV.X;
+                raw[i++] = UV.Y;
+            }
+
+            return raw;
+        }
+
+        
 
 
         public Vertex[] FromPositions(float[] positions) {
@@ -100,8 +122,12 @@ namespace AnarchyEngine.Rendering.Vertices {
                    left.UV != right.UV;
         }
 
+        public bool Equals(Vertex v) => QuickEquals(v);
+
+        public bool QuickEquals(Vertex v) => Position == v.Position;
+
         public override bool Equals(object o) {
-            return o is Vertex && this == (Vertex)o;
+            return o is Vertex v && this == v;
         }
 
         public override int GetHashCode() {

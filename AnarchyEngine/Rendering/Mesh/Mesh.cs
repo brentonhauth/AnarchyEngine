@@ -80,7 +80,8 @@ namespace AnarchyEngine.Rendering.Mesh {
         public void Init() {
             if (VertexArray != null) return;
             VertexArray = new VertexArray();
-            IEnumerable<float> raws;
+            VertexArray.SetStride(VertexProperties);
+            //IEnumerable<float> raws;
 
             bool hasPosition = HasProperty(VertexProperty.Position),
                  hasNormal = HasProperty(VertexProperty.Normal),
@@ -102,15 +103,15 @@ namespace AnarchyEngine.Rendering.Mesh {
                 VertexArray.Model(Shader.UVName, 2, stride, offset);
             }
 
-            raws = Vertices.SelectMany(v => {
+            /*raws = Vertices.SelectMany(v => {
                 var raw = new List<float>();
                 if (hasPosition) raw.AddRange(v.Position.Raw);
                 if (hasNormal) raw.AddRange(v.Normal.Raw);
                 if (hasUV) raw.AddRange(v.UV.Raw);
                 return raw;
-            });
+            });*/
 
-            VertexArray.AddVertexBuffer(raws.ToArray());
+            VertexArray.AddVertexBuffer(Vertices);
             VertexArray.Init();
         }
 

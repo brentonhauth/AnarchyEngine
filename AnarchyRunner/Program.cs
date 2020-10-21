@@ -49,7 +49,7 @@ namespace AnarchyRunner {
             //var tex = new Texture(@"\Resources\img2.jpg");
             //planeMesh.AddTexture(tex);
 
-            Entity planeEntity = new Entity();
+            Entity planeEntity = new Entity("PLANE_ENTITY");
             var planeFilter = planeEntity.AddComponent<MeshFilter>();
             planeFilter.Mesh = planeMesh;
             planeFilter.Material = Material.Default;
@@ -61,8 +61,8 @@ namespace AnarchyRunner {
 
             //for (int i = 0; i < 15; i++) {
 
-            scene.Add(SpawnDuck());
             scene.Add(SpawnWolf());
+            scene.Add(SpawnDuck());
             //var secondWolf = SpawnWolf(); secondWolf.Transform.Position += Vector3.UnitY * 2; scene.Add(secondWolf);
 
             Queue<Entity> cubes = new Queue<Entity>();
@@ -93,7 +93,7 @@ namespace AnarchyRunner {
 
         private static Entity SpawnDuck() {
             var duckMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\Duck.fbx", VertexProperty.All);
-            Entity duckEntity = new Entity();
+            Entity duckEntity = new Entity("DUCK_ENTITY");
             duckEntity.AddComponent(new MeshFilter(duckMesh));
             duckEntity.Transform.Position = new Vector2(.5f, -.5f).Z0;
             duckEntity.Transform.Scale *= .15f;

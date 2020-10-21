@@ -16,10 +16,6 @@ namespace AnarchyEngine.Rendering.Vertices {
             Data = data;
         }
 
-        ~VertexBuffer() {
-            Console.WriteLine($"~VertexBuffer() -> {Handle}");
-        }
-
         public void Init() {
             Handle = GL.GenBuffer();
 
@@ -38,7 +34,7 @@ namespace AnarchyEngine.Rendering.Vertices {
         public void Use() => GL.BindBuffer(BufferTarget.ArrayBuffer, Handle);
 
         public void Dispose() {
-            Console.WriteLine($"VertexBuffer.Dispose -> {Handle}");
+            // Console.WriteLine($"VertexBuffer.Dispose -> {Handle}");
             // GL.DeleteBuffer(Handle);
         }
     }

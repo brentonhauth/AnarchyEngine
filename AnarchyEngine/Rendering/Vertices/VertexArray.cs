@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AnarchyEngine.Core;
 using AnarchyEngine.Rendering.Shaders;
 using OpenTK.Graphics.OpenGL4;
 
 namespace AnarchyEngine.Rendering.Vertices {
     internal class VertexArray : IPipable {
 
-        public int Handle { get; private set; } = 0;
+        private bool _Disposed = false;
+
+        public int Handle { get; protected set; } = 0;
+        public int Stride { get; private set; } = 8;
         public VertexBuffer VertexBuffer { get; private set; }
 
         private static int CurrentlyInUse = 0;
@@ -15,35 +19,37 @@ namespace AnarchyEngine.Rendering.Vertices {
         public bool Initialized { get; private set; }
 
         private List<VertexArrayDataModel> DataModels;
-
-        private Shader Shader;
-
+        
         // find better solution
-        public int Count => (int)(VertexBuffer.Count / DataModels.First().Stride);
-
-        public VertexArray(Shader shader) : this() {
-            Shader = shader;
-        }
+        public int Count => (int)(VertexBuffer.Count / Stride);
 
         public VertexArray() {
             DataModels = new List<VertexArrayDataModel>();
+
         }
 
         ~VertexArray() {
-            Console.WriteLine($"~VertexArray() -> {Handle}");
+            if (!_Disposed) Dispose();
+        }
+
+        public void SetStride(VertexProperty props) {
+            Stride = Vertex.Stride(props);
         }
 
         public void AddVertexBuffer(VertexBuffer vb) {
             VertexBuffer = vb;
         }
 
-        public void AddVertexBuffer(float[] data) {
+        public virtual void AddVertexBuffer(float[] data) {
             AddVertexBuffer(new VertexBuffer(data));
         }
 
-        public void SetShader(Shader s) => Shader = s;
+        public virtual void AddVertexBuffer(IEnumerable<Vertex> data) {
+            IEnumerable<float> raws = data.SelectMany(v => v.OnlyRaw(Stride));
+            AddVertexBuffer(raws.ToArray());
+        }
 
-        public void Init() {
+        public virtual void Init() {
             if (VertexBuffer == null)
                 throw new Exception("No VertexBuffer");
             //AddVertexBuffer(new float[0]);
@@ -71,9 +77,14 @@ namespace AnarchyEngine.Rendering.Vertices {
             }
         }
 
-        public void Dispose() {
-            Console.WriteLine($"VertexArray.Dispose -> {Handle}");
-            GL.DeleteVertexArray(Handle);
+        public virtual void Draw() {
+            GL.DrawArrays(PrimitiveType.Triangles, 0, Count);
+        }
+
+        public virtual void Dispose() {
+            VertexBuffer.Dispose();
+            //GL.DeleteVertexArray(Handle);
+            _Disposed = true;
         }
 
         //public void AddData(IEnumerable<float> data) => Data.AddRange(data);
@@ -81,7 +92,7 @@ namespace AnarchyEngine.Rendering.Vertices {
 
 
         //--------------------------------------------------------------------------------
-
+        #region VertexArray Data Model
         struct VertexArrayDataModel {
             public readonly string Attr;
             public readonly int Size, Stride, Offset;
@@ -104,6 +115,47 @@ namespace AnarchyEngine.Rendering.Vertices {
                     stride: Stride * sizeof(float),
                     offset: Offset * sizeof(float));
             }
+        }
+        #endregion
+    }
+
+    internal class ElementVertexArray : VertexArray {
+        public ElementBuffer ElementBuffer { get; private set; }
+
+        public ElementVertexArray() : base() { }
+        
+        public override void AddVertexBuffer(IEnumerable<Vertex> data) {
+            var verts = new List<Vertex>();
+
+            uint[] indices = data.Select(v => {
+                if (!verts.Contains(v)) verts.Add(v);
+                return (uint)verts.IndexOf(v);
+            }).ToArray();
+
+            ElementBuffer = new ElementBuffer(indices);
+            base.AddVertexBuffer(verts);
+        }
+
+        public override void Init() {
+            if (ElementBuffer == null)
+                throw new Exception("No ElementBuffer");
+            VertexBuffer.Init();//+
+            ElementBuffer.Init(); // ! May have to init VB before EB
+
+            // base.Init();
+            Handle = GL.GenVertexArray();//+
+            Use();//+
+            VertexBuffer.Use();
+            ElementBuffer.Use();
+        }
+
+        public override void Draw() {
+            GL.DrawElements(PrimitiveType.Triangles, ElementBuffer.Count, DrawElementsType.UnsignedInt, 0);
+        }
+
+        public override void Dispose() {
+            ElementBuffer.Dispose();
+            base.Dispose();
         }
     }
 }

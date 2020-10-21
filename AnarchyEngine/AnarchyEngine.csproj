@@ -94,6 +94,7 @@
     <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Texture.cs" />
+    <Compile Include="Rendering\Vertices\ElementBuffer.cs" />
     <Compile Include="Rendering\Vertices\Vertex.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexBuffer.cs" />

@@ -71,13 +71,9 @@ namespace AnarchyEngine.Rendering {
                 shader.SetMatrix4(Shader.ViewProjectionName, ref ViewProjection);
 
                 c.Material.ApplyShader();
-                Draw(c.VertexArray);
+                c.VertexArray.Draw();
             }
             Contexts.Clear();
-        }
-
-        public static void Draw(VertexArray va) {
-            GL.DrawArrays(PrimitiveType.Triangles, 0, va.Count);
         }
         
         public static void PreCleanupBind() {
