@@ -85,6 +85,7 @@
     <Compile Include="Physics\Collision.cs" />
     <Compile Include="Physics\Geometry.cs" />
     <Compile Include="Physics\PhysicsSystem.cs" />
+    <Compile Include="Platform\OpenGL\OpenGLApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\IPipable.cs" />
     <Compile Include="Rendering\Material.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Rendering\Mesh\Mesh.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Rendering\Renderer.cs" />
+    <Compile Include="Rendering\RendererApi.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Texture.cs" />
     <Compile Include="Rendering\Vertices\ElementBuffer.cs" />

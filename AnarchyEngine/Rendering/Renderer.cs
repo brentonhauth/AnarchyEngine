@@ -13,6 +13,11 @@ using System.Threading.Tasks;
 
 namespace AnarchyEngine.Rendering {
     internal static class Renderer {
+
+        public static RendererApi Api { get; private set; }
+        
+        //public static Renderer I { get; private set; }
+
         public static Camera Camera { get; private set; }
         private static RenderContext CurrentContext;
         private static Matrix4 ViewProjection;
@@ -21,19 +26,23 @@ namespace AnarchyEngine.Rendering {
         public static event Action ScheduleForInit;
 
         public static void Init() {
+            Api = RendererApi.Create();
+            Api.Init();
             CurrentContext = new RenderContext();
             Contexts = new List<RenderContext>();
             ScheduleForInit?.Invoke();
         }
 
-        public static void Start() => Start(Camera.Main);
+        public static void Start() => Api.Start(Camera.Main);
 
         public static void Start(Camera camera) {
+            Api.Start(camera);
             Camera = camera;
             ViewProjection = camera.ViewProjection;
         }
 
-        public static void Push(Material material, VertexArray va, Matrix4 transform) {
+        public static void Push(Material material, VertexArray va, in Matrix4 transform) {
+            Api.Push(material, va, transform);
             CurrentContext.Material = material;
             CurrentContext.VertexArray = va;
             CurrentContext.Transform = transform;
@@ -51,27 +60,15 @@ namespace AnarchyEngine.Rendering {
         }*/
 
         public static void Submit() {
+            Api.Submit();
             Contexts.Add(CurrentContext);
             CurrentContext = new RenderContext();
         }
 
         public static void Finish() {
+            Api.Finish();
             foreach (var c in Contexts) {
-                Shader shader = c.Material.Shader;
-
-                shader.Use();
-                c.VertexArray.Use();
-
-                //<temp>
-                shader.SetVector3("viewPos", Camera.Main.Front);
-                shader.SetVector3("lightPos", Camera.Main.Position);
-                //</temp>
-
-                shader.SetMatrix4(Shader.ModelName, c.Transform);
-                shader.SetMatrix4(Shader.ViewProjectionName, ref ViewProjection);
-
-                c.Material.ApplyShader();
-                c.VertexArray.Draw();
+                
             }
             Contexts.Clear();
         }
@@ -82,4 +79,6 @@ namespace AnarchyEngine.Rendering {
             GL.UseProgram(0);
         }
     }
+
+    internal interface IRenderContext { }
 }
