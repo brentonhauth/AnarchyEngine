@@ -45,8 +45,17 @@ namespace AnarchyEngine.Rendering.Vertices {
         }
 
         public virtual void AddVertexBuffer(IEnumerable<Vertex> data) {
-            IEnumerable<float> raws = data.SelectMany(v => v.OnlyRaw(Stride));
-            AddVertexBuffer(raws.ToArray());
+            float[] buff = new float[Stride],
+                raws = new float[data.Count() * Stride];
+
+            int i = 0;
+            foreach (Vertex v in data) {
+                v.OnlyRawNonAloc(buff);
+                buff.CopyTo(raws, i);
+                i += Stride;
+            }
+
+            AddVertexBuffer(raws);
         }
 
         public virtual void Init() {

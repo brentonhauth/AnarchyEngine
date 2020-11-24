@@ -87,7 +87,7 @@ namespace AnarchyEngine.ECS.Components {
 
             Body.Orientation = (DataTypes.Matrix3)orientation;
             Body.Position = transform.Position;
-            PhysicsSystem.Add(Body);
+            Physics.Physics.Add(Body);
         }
 
         #region Event Listeners
@@ -155,7 +155,7 @@ namespace AnarchyEngine.ECS.Components {
             Entity.Events.UpdateRotation -= UpdateRotationListener;
             Entity.Events.AddedComponent -= AddedComponentListener;
             if (Body != null) {
-                PhysicsSystem.Remove(Body);
+                Physics.Physics.Remove(Body);
             }
         }
     }

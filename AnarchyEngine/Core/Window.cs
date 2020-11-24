@@ -19,7 +19,7 @@ namespace AnarchyEngine.Core {
             GL.ClearColor(Color4.SkyBlue);
             GL.Enable(EnableCap.DepthTest);
 
-            PhysicsSystem.Init();
+            Physics.Physics.Init();
             Renderer.Init();
             World.Start();
 
@@ -48,7 +48,7 @@ namespace AnarchyEngine.Core {
         protected override void OnUpdateFrame(FrameEventArgs e) {
             PreUpdate(e);
             // ...
-            PhysicsSystem.Update();
+            Physics.Physics.Update();
             Scheduler.Update();
 
             World.Update();

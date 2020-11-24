@@ -4,9 +4,10 @@ using Jitter.LinearMath;
 using JWorld = Jitter.World;
 using JRigidBody = Jitter.Dynamics.RigidBody;
 using AnarchyEngine.ECS.Components;
+using AnarchyEngine.DataTypes;
 
 namespace AnarchyEngine.Physics {
-    internal static class PhysicsSystem {
+    public static class Physics {
         internal static CollisionSystem CollisionSystem { get; private set; }
         internal static JWorld JWorld { get; private set; }
 
@@ -33,6 +34,15 @@ namespace AnarchyEngine.Physics {
 
         internal static void Dispose() {
             JWorld.Clear();
+        }
+
+        public static void Raycast(Ray ray) => Raycast(ray.Origin, ray.Direction);
+        public static void Raycast(Vector3 origin, Vector3 direction) {
+            CollisionSystem.Raycast(origin, direction, RaycastCallback, out var body, out var normal, out var fraction);
+        }
+
+        internal static bool RaycastCallback(JRigidBody body, JVector normal, float fraction) {
+            return false;
         }
     }
 }

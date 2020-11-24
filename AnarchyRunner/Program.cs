@@ -31,11 +31,63 @@ namespace AnarchyRunner {
         private static Mesh wolfMesh;
 
         static void Main(string[] args) {
-            ThrowCubesDemo();
+            //ThrowCubesDemo();
+            TestRef();
             /*int x = 2323;
             int y = 67;
             Utilities.Swap(ref x, ref y);
             Console.WriteLine($"x: {x}, y: {y}");*/
+        }
+
+        class Test {
+            public int X = 0;
+            public override string ToString() => X.ToString();
+        }
+
+        private static int Stride = 8;
+
+        private static float[] AddVertices(IEnumerable<Vertex> data) {
+            IEnumerable<float> raws = data.SelectMany(v => v.OnlyRaw(Stride));
+            return raws.ToArray();
+        }
+
+        private static float[] AddVertices2(IEnumerable<Vertex> data) {
+            float[] buff = new float[Stride],
+                raws = new float[data.Count() * Stride];
+
+            int i = 0;
+            foreach (Vertex v in data) {
+                v.OnlyRawNonAloc(buff);
+                buff.CopyTo(raws, i);
+                i += Stride;
+            }
+            return raws;
+        }
+
+        private static void TestRef() {
+            var data = FileHelper.LoadFbx($@"{FileHelper.Path}\Resources\wolf.fbx");
+
+            var sw = Stopwatch.StartNew();
+            var v1 = AddVertices(data);
+            sw.Stop();
+            var elapsed = sw.Elapsed;
+
+            sw = Stopwatch.StartNew();
+            var v2 = AddVertices2(data);
+            sw.Stop();
+
+            var elapsed2 = sw.Elapsed;
+
+            for (int i = 0; i < v1.Length; i++) {
+                if (v1[i] != v2[i]) {
+                    Console.WriteLine($"!!! v1: {v1[i]}, v2: {v2[i]} !!!");
+                }
+            }
+
+            Console.WriteLine($"V1 ({v1.Length}): {elapsed}, V2 ({v2.Length}): {elapsed2}");
+
+
+            Console.ReadKey();
         }
 
         private static void ThrowCubesDemo() {
@@ -134,7 +186,11 @@ namespace AnarchyRunner {
         private static Entity SpawnDuck() {
             var duckMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\Duck.fbx", VertexProperty.All);
             Entity duckEntity = new Entity("DUCK_ENTITY");
-            duckEntity.AddComponent(new MeshFilter(duckMesh));
+            var filter = duckEntity.AddComponent<MeshFilter>();
+            filter.Mesh = duckMesh;
+            filter.Material = new Material {
+                Color = Color.Green
+            };
             duckEntity.Transform.Position = new Vector2(.5f, -.5f).Z0;
             duckEntity.Transform.Scale *= .15f;
             return duckEntity;
@@ -145,7 +201,7 @@ namespace AnarchyRunner {
             var filter = wolfEntity.AddComponent<MeshFilter>();
             filter.Mesh = mesh ?? wolfMesh;
             filter.Material = new Material {
-                Color = Color.Blue
+                Color = Color.OrangeRed
             };
             wolfEntity.Transform.Position = -Vector3.UnitY * .5f;
             wolfEntity.Transform.Scale *= .01f;
@@ -162,7 +218,7 @@ namespace AnarchyRunner {
             var bc = entity.AddComponent<BoxCollider>();
             mf.Mesh = mesh ?? Mesh.Cube;
             mf.Material = new Material {
-                Color = Color.Green
+                Color = Color.FireBrick
             };
             if (velocity != Vector3.Zero) {
                 rb.IsBodyActive = true;
