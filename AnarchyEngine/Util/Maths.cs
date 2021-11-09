@@ -1,10 +1,10 @@
 ﻿using AnarchyEngine.Core;
-using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AnarchyEngine.DataTypes;
 
 namespace AnarchyEngine.Util {
     public static class Maths {
@@ -27,8 +27,8 @@ namespace AnarchyEngine.Util {
         }
 
         // !Restructure
-        public static Quaternion RotateTowards(Vector3 u, Vector3 v) {
-            var q = new Quaternion {
+        public static OpenTK.Quaternion RotateTowards(OpenTK.Vector3 u, OpenTK.Vector3 v) {
+            var q = new OpenTK.Quaternion {
                 Xyz = Vector3.Cross(u, v)
             };
 

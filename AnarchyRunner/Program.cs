@@ -31,63 +31,7 @@ namespace AnarchyRunner {
         private static Mesh wolfMesh;
 
         static void Main(string[] args) {
-            //ThrowCubesDemo();
-            TestRef();
-            /*int x = 2323;
-            int y = 67;
-            Utilities.Swap(ref x, ref y);
-            Console.WriteLine($"x: {x}, y: {y}");*/
-        }
-
-        class Test {
-            public int X = 0;
-            public override string ToString() => X.ToString();
-        }
-
-        private static int Stride = 8;
-
-        private static float[] AddVertices(IEnumerable<Vertex> data) {
-            IEnumerable<float> raws = data.SelectMany(v => v.OnlyRaw(Stride));
-            return raws.ToArray();
-        }
-
-        private static float[] AddVertices2(IEnumerable<Vertex> data) {
-            float[] buff = new float[Stride],
-                raws = new float[data.Count() * Stride];
-
-            int i = 0;
-            foreach (Vertex v in data) {
-                v.OnlyRawNonAloc(buff);
-                buff.CopyTo(raws, i);
-                i += Stride;
-            }
-            return raws;
-        }
-
-        private static void TestRef() {
-            var data = FileHelper.LoadFbx($@"{FileHelper.Path}\Resources\wolf.fbx");
-
-            var sw = Stopwatch.StartNew();
-            var v1 = AddVertices(data);
-            sw.Stop();
-            var elapsed = sw.Elapsed;
-
-            sw = Stopwatch.StartNew();
-            var v2 = AddVertices2(data);
-            sw.Stop();
-
-            var elapsed2 = sw.Elapsed;
-
-            for (int i = 0; i < v1.Length; i++) {
-                if (v1[i] != v2[i]) {
-                    Console.WriteLine($"!!! v1: {v1[i]}, v2: {v2[i]} !!!");
-                }
-            }
-
-            Console.WriteLine($"V1 ({v1.Length}): {elapsed}, V2 ({v2.Length}): {elapsed2}");
-
-
-            Console.ReadKey();
+            ThrowCubesDemo();
         }
 
         private static void ThrowCubesDemo() {
@@ -95,7 +39,7 @@ namespace AnarchyRunner {
             List<Entity> entities = new List<Entity>();
             wolfMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\wolf.fbx", VertexProperty.All);
 
-
+            
             Mesh planeMesh = Mesh.FromRaw(planeVertices);
 
             //var tex = new Texture(@"\Resources\img2.jpg");
@@ -111,17 +55,14 @@ namespace AnarchyRunner {
             planeEntity.AddComponent<BoxCollider>().Size = planeEntity.Transform.Scale;
             scene.Add(planeEntity);
 
-            //for (int i = 0; i < 15; i++) {
-
+            
             scene.Add(SpawnWolf());
             scene.Add(SpawnDuck());
-            //var secondWolf = SpawnWolf(); secondWolf.Transform.Position += Vector3.UnitY * 2; scene.Add(secondWolf);
 
             Queue<Entity> cubes = new Queue<Entity>();
             
             scene.Add(new Updatable {
                 OnUpdate = () => {
-                    
                     if (Input.IsKeyPressed(Key.F)) {
                         var cam = Camera.Main;
                         var entity = AddBox((1.1f * cam.Front) + cam.Position, cam.Front * 5f, null);
@@ -138,11 +79,21 @@ namespace AnarchyRunner {
                 }
             });
 
+            Entity cubeEnt = AddBox(Vector3.Zero, Vector3.Zero, null);// new Entity("CUBE_ENT");
+
+            scene.Add(cubeEnt);
+
             Vector2 _lastPos = Vector2.Zero;
             bool _firstMove = true;
+            bool zoinks = true;
 
             scene.Add(new Updatable {
                 OnUpdate = () => {
+                    if (Input.IsKeyDown(Key.P)) {
+                        zoinks = false;
+                        Camera.Main.printtThing();
+                        cubeEnt.Transform.printThing();
+                    }
 
                     const float sensitivity = .3f;
                     var c = Camera.Main;

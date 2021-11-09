@@ -121,7 +121,7 @@ namespace AnarchyEngine.Rendering.Vertices {
                    left.UV != right.UV;
         }
 
-        public bool Equals(Vertex v) => QuickEquals(v);
+        public bool Equals(Vertex v) => this == v;
 
         public bool QuickEquals(Vertex v) => Position == v.Position;
 
