@@ -2,7 +2,7 @@
 using AnarchyEngine.Util;
 
 namespace AnarchyEngine.DataTypes {
-    public struct Vector4 {
+    public struct Vector4 : IEquatable<Vector4> {
         #region Static Readonly Vector4 Variables
         public static readonly Vector4 One = new Vector4(1f),
             Zero = new Vector4(0f),
@@ -26,8 +26,8 @@ namespace AnarchyEngine.DataTypes {
                     case 1: return Y;
                     case 2: return Z;
                     case 3: return W;
+                    default: throw new IndexOutOfRangeException();
                 }
-                throw new IndexOutOfRangeException();
             }
             set {
                 switch (index) {
@@ -99,10 +99,10 @@ namespace AnarchyEngine.DataTypes {
         public static float DistanceSquared(Vector4 u, Vector4 v) => (u - v).MagnitudeSquared;
 
         public static float Dot(Vector4 u, Vector4 v) {
-            Dot(ref u, ref v, out float result);
+            Dot(in u, in v, out float result);
             return result;
         }
-        public static void Dot(ref Vector4 u, ref Vector4 v, out float result) {
+        public static void Dot(in Vector4 u, in Vector4 v, out float result) {
             result = (u.X * v.X) + (u.Y * v.Y) + (u.Z * v.Z) + (u.W * v.W);
         }
 
@@ -118,16 +118,30 @@ namespace AnarchyEngine.DataTypes {
             return Maths.Rad2Deg((float)acos);
         }
 
-        public Vector4 Projection(Vector4 against) => Projection(this, against);
-        public static Vector4 Projection(Vector4 self, Vector4 against) {
-            return Dot(against, self) / against.MagnitudeSquared * against;
+        public Vector4 Projection(Vector4 against) {
+            Projection(this, against, out Vector4 proj);
+            return proj;
         }
-        
+        public static Vector4 Projection(Vector4 self, Vector4 against) {
+            Projection(self, against, out Vector4 proj);
+            return proj;
+        }
+        public static void Projection(in Vector4 self, in Vector4 against, out Vector4 proj) {
+            Dot(self, against, out float dot);
+            Multiply(against, dot / against.MagnitudeSquared, out proj);
+        }
+
         public static void Add(in Vector4 left, in Vector4 right, out Vector4 sum) {
             sum.X = left.X + right.X;
             sum.Y = left.Y + right.Y;
             sum.Z = left.Z + right.Z;
             sum.W = left.W + right.W;
+        }
+        public static void Add(ref Vector4 self, in Vector4 other) {
+            self.X += other.X;
+            self.Y += other.Y;
+            self.Z += other.Z;
+            self.W += other.W;
         }
 
         public static void Subtract(in Vector4 left, in Vector4 right, out Vector4 diff) {
@@ -156,6 +170,13 @@ namespace AnarchyEngine.DataTypes {
             quot.Y = left.Y / right;
             quot.Z = left.Z / right;
             quot.W = left.W / right;
+        }
+
+        public static void Scale(ref Vector4 vec, in float scale) {
+            vec.X *= scale;
+            vec.Y *= scale;
+            vec.Z *= scale;
+            vec.W *= scale;
         }
         #endregion
 
@@ -234,8 +255,16 @@ namespace AnarchyEngine.DataTypes {
             return $"({X}, {Y}, {Z}, {W})";
         }
         public override bool Equals(object o) {
-            return (o is Vector4) && this == (Vector4)o;
+            return o is Vector4 v && Equals(v);
         }
+
+        public bool Equals(Vector4 other) {
+            return X == other.X &&
+                   Y == other.Y &&
+                   Z == other.Z &&
+                   W == other.W;
+        }
+
         public override int GetHashCode() {
             const int n = -1521134295;
             int code = 707706286;

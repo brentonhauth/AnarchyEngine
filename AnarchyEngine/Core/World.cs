@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics;
+﻿using AnarchyEngine.DataTypes;
+using AnarchyEngine.ECS;
+using OpenTK.Graphics;
 using OpenTK.Graphics.ES20;
 using System;
 using System.Collections.Generic;
@@ -14,8 +16,8 @@ namespace AnarchyEngine.Core {
 
         public static ulong Ticks { get; internal set; } = 0;
 
-        private static Color4 m_SkyBox;
-        public static Color4 SkyBox {
+        private static Color m_SkyBox;
+        public static Color SkyBox {
             get => m_SkyBox;
             set => GL.ClearColor(m_SkyBox = value);
         }
@@ -24,6 +26,11 @@ namespace AnarchyEngine.Core {
             using (Window = new Window(title, width, height)) {
                 Window.Run(fps);
             }
+        }
+
+        public static void Init() {
+            CoreECS.Init();
+            Physics.Physics.Init();
         }
 
         internal static void Start() {
@@ -35,13 +42,20 @@ namespace AnarchyEngine.Core {
         }
 
         internal static void Render() {
-            Camera.Main.Render();
-            Scene.Current.Render();
+            //Scene.Current.Render();
+            var renderable = CoreECS.GetRenderable();
+            foreach (var r in renderable) {
+                r.Render();
+            }
         }
 
         internal static void Update() {
             Camera.Main.Update(); // change camera logic
             Scene.Current.Update();
+            var phys = CoreECS.GetPhysicsRelated();
+            foreach (var p in phys) {
+                p.Update();
+            }
         }
 
         internal static void Dispose() {
@@ -68,6 +82,10 @@ namespace AnarchyEngine.Core {
                 throw new Exception("Scene with name already exists!");
             }
             Scenes[scene.Name] = scene;
+        }
+
+        private static void InitializeECS() {
+            
         }
     }
 }

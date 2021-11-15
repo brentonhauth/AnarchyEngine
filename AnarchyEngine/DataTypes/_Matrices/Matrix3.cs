@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Jitter.LinearMath;
 
 namespace AnarchyEngine.DataTypes {
+
     public struct Matrix3 {
         public static readonly Matrix3 Identity = new Matrix3(
             Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ);
@@ -90,7 +91,7 @@ namespace AnarchyEngine.DataTypes {
         public Matrix3(Matrix2 m00to22) {
             Row0 = m00to22.Row0.Z0;
             Row1 = m00to22.Row1.Z0;
-            Row2 = Vector3.Zero;
+            Row2 = Vector3.UnitZ;
         }
 
         public Vector3 Row(int index) {
@@ -98,8 +99,8 @@ namespace AnarchyEngine.DataTypes {
                 case 0: return Row0;
                 case 1: return Row1;
                 case 2: return Row2;
+                default: throw new IndexOutOfRangeException();
             }
-            throw new IndexOutOfRangeException();
         }
         public void Row(int index, Vector3 row) => Row(index, ref row);
         public void Row(int index, ref Vector3 row) {
@@ -117,8 +118,8 @@ namespace AnarchyEngine.DataTypes {
                 case 0: return Column0;
                 case 1: return Column1;
                 case 2: return Column2;
+                default: throw new IndexOutOfRangeException();
             }
-            throw new IndexOutOfRangeException();
         }
         public void Column(int index, Vector3 column) => Column(index, ref column);
         public void Column(int index, ref Vector3 column) {

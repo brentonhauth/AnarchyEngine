@@ -2,9 +2,9 @@
 
 namespace AnarchyEngine.DataTypes {
     public struct Matrix4 {
-        public static readonly Matrix4 Identity = new Matrix4(
-            Vector4.UnitX, Vector4.UnitY,
-            Vector4.UnitZ, Vector4.UnitW);
+        public static readonly Matrix4 Identity = new Matrix4(1f);
+
+        public static readonly Matrix4 Zero = new Matrix4(0f);
 
         public Vector4 Row0, Row1, Row2, Row3;
 
@@ -98,6 +98,13 @@ namespace AnarchyEngine.DataTypes {
             Row2 = row2; Row3 = row3;
         }
 
+        public Matrix4(float diagonal) {
+            Row0 = new Vector4() { X = diagonal };
+            Row1 = new Vector4() { Y = diagonal };
+            Row2 = new Vector4() { Z = diagonal };
+            Row3 = new Vector4() { W = diagonal };
+        }
+
         public Matrix4(
             float m00, float m01, float m02, float m03,
             float m10, float m11, float m12, float m13,
@@ -113,7 +120,7 @@ namespace AnarchyEngine.DataTypes {
             Row0 = m00to33.Row0.W0;
             Row1 = m00to33.Row1.W0;
             Row2 = m00to33.Row2.W0;
-            Row3 = Vector4.Zero;
+            Row3 = Vector4.UnitW;
         }
 
         public Vector4 Row(int index) {
@@ -122,8 +129,8 @@ namespace AnarchyEngine.DataTypes {
                 case 1: return Row1;
                 case 2: return Row2;
                 case 3: return Row3;
+                default: throw new IndexOutOfRangeException();
             }
-            throw new IndexOutOfRangeException();
         }
         public void Row(int index, Vector4 row) => Row(index, ref row);
         public void Row(int index, ref Vector4 row) {
@@ -142,8 +149,8 @@ namespace AnarchyEngine.DataTypes {
                 case 1: return Column1;
                 case 2: return Column2;
                 case 3: return Column3;
+                default: throw new IndexOutOfRangeException();
             }
-            throw new IndexOutOfRangeException();
         }
         public void Column(int index, Vector4 column) => Column(index, ref column);
         public void Column(int index, ref Vector4 column) {
@@ -161,9 +168,9 @@ namespace AnarchyEngine.DataTypes {
                     x = Vector3.Cross(up, z).Normalized,
                     y = Vector3.Cross(z, x).Normalized;
 
-            Vector3.Dot(ref x, ref eye, out var mx);
-            Vector3.Dot(ref y, ref eye, out var my);
-            Vector3.Dot(ref z, ref eye, out var mz);
+            Vector3.Dot(in x, in eye, out float mx);
+            Vector3.Dot(in y, in eye, out float my);
+            Vector3.Dot(in z, in eye, out float mz);
 
             return new Matrix4(
                 x.X, y.X, z.X, 0,
@@ -172,63 +179,63 @@ namespace AnarchyEngine.DataTypes {
                 -mx, -my, -mz, 1);
         }
 
-        public override bool Equals(object o) => o is Matrix4 m && this == m;
-        public override string ToString() {
-            return $"{Row0}\n{Row1}\n{Row2}\n{Row3}";
-        }
-        public override int GetHashCode() => base.GetHashCode();
 
-        
-        public static implicit operator OpenTK.Matrix4(Matrix4 m) => new OpenTK.Matrix4(m.Row0, m.Row1, m.Row2, m.Row3);
-        public static implicit operator Matrix4(OpenTK.Matrix4 m) => new Matrix4(m.Row0, m.Row1, m.Row2, m.Row3);
-
-        public static Matrix4 operator *(Matrix4 left, Matrix4 right) {
+        public static void Multiply(in Matrix4 left, in Matrix4 right, out Matrix4 prod) {
             Vector4 rightColumn0 = right.Column0,
                     rightColumn1 = right.Column1,
                     rightColumn2 = right.Column2,
                     rightColumn3 = right.Column3;
 
-            return new Matrix4(
-                m00: Vector4.Dot(left.Row0, rightColumn0),
-                m01: Vector4.Dot(left.Row0, rightColumn1),
-                m02: Vector4.Dot(left.Row0, rightColumn2),
-                m03: Vector4.Dot(left.Row0, rightColumn3),
+            Vector4.Dot(in left.Row0, in rightColumn0, out prod.Row0.X);
+            Vector4.Dot(in left.Row0, in rightColumn1, out prod.Row0.Y);
+            Vector4.Dot(in left.Row0, in rightColumn2, out prod.Row0.Z);
+            Vector4.Dot(in left.Row0, in rightColumn3, out prod.Row0.W);
 
-                m10: Vector4.Dot(left.Row1, rightColumn0),
-                m11: Vector4.Dot(left.Row1, rightColumn1),
-                m12: Vector4.Dot(left.Row1, rightColumn2),
-                m13: Vector4.Dot(left.Row1, rightColumn3),
+            Vector4.Dot(in left.Row1, in rightColumn0, out prod.Row1.X);
+            Vector4.Dot(in left.Row1, in rightColumn1, out prod.Row1.Y);
+            Vector4.Dot(in left.Row1, in rightColumn2, out prod.Row1.Z);
+            Vector4.Dot(in left.Row1, in rightColumn3, out prod.Row1.W);
 
-                m20: Vector4.Dot(left.Row2, rightColumn0),
-                m21: Vector4.Dot(left.Row2, rightColumn1),
-                m22: Vector4.Dot(left.Row2, rightColumn2),
-                m23: Vector4.Dot(left.Row2, rightColumn3),
+            Vector4.Dot(in left.Row2, in rightColumn0, out prod.Row2.X);
+            Vector4.Dot(in left.Row2, in rightColumn1, out prod.Row2.Y);
+            Vector4.Dot(in left.Row2, in rightColumn2, out prod.Row2.Z);
+            Vector4.Dot(in left.Row2, in rightColumn3, out prod.Row2.W);
 
-                m30: Vector4.Dot(left.Row3, rightColumn0),
-                m31: Vector4.Dot(left.Row3, rightColumn1),
-                m32: Vector4.Dot(left.Row3, rightColumn2),
-                m33: Vector4.Dot(left.Row3, rightColumn3));
+            Vector4.Dot(in left.Row3, in rightColumn0, out prod.Row3.X);
+            Vector4.Dot(in left.Row3, in rightColumn1, out prod.Row3.Y);
+            Vector4.Dot(in left.Row3, in rightColumn2, out prod.Row3.Z);
+            Vector4.Dot(in left.Row3, in rightColumn3, out prod.Row3.W);
+
+        }
+
+        public static explicit operator Matrix4(Matrix3 m) => new Matrix4(m);
+        public static implicit operator OpenTK.Matrix4(Matrix4 m) => new OpenTK.Matrix4(m.Row0, m.Row1, m.Row2, m.Row3);
+        public static implicit operator Matrix4(OpenTK.Matrix4 m) => new Matrix4(m.Row0, m.Row1, m.Row2, m.Row3);
+
+        public static Matrix4 operator *(Matrix4 left, Matrix4 right) {
+            Multiply(in left, in right, out Matrix4 prod);
+            return prod;
         }
         public static Matrix4 operator *(float scale, Matrix4 mat) {
-            mat.Row0 *= scale;
-            mat.Row1 *= scale;
-            mat.Row2 *= scale;
-            mat.Row3 *= scale;
+            Vector4.Scale(ref mat.Row0, in scale);
+            Vector4.Scale(ref mat.Row1, in scale);
+            Vector4.Scale(ref mat.Row2, in scale);
+            Vector4.Scale(ref mat.Row3, in scale);
             return mat;
         }
         public static Matrix4 operator *(Matrix4 mat, float scale) {
-            mat.Row0 *= scale;
-            mat.Row1 *= scale;
-            mat.Row2 *= scale;
-            mat.Row3 *= scale;
+            Vector4.Scale(ref mat.Row0, in scale);
+            Vector4.Scale(ref mat.Row1, in scale);
+            Vector4.Scale(ref mat.Row2, in scale);
+            Vector4.Scale(ref mat.Row3, in scale);
             return mat;
         }
         public static Matrix4 operator +(Matrix4 left, Matrix4 right) {
-            return new Matrix4(
-                left.Row0 + right.Row0,
-                left.Row1 + right.Row1,
-                left.Row2 + right.Row2,
-                left.Row3 + right.Row3);
+            Vector4.Add(ref left.Row0, in right.Row0);
+            Vector4.Add(ref left.Row1, in right.Row1);
+            Vector4.Add(ref left.Row2, in right.Row2);
+            Vector4.Add(ref left.Row3, in right.Row3);
+            return left;
         }
         public static bool operator ==(Matrix4 left, Matrix4 right) {
             return left.Row0 == right.Row0 &&
@@ -242,5 +249,12 @@ namespace AnarchyEngine.DataTypes {
                    left.Row2 != right.Row2 ||
                    left.Row3 != right.Row3;
         }
+
+
+        public override bool Equals(object o) => o is Matrix4 m && this == m;
+        public override string ToString() {
+            return $"{Row0}\n{Row1}\n{Row2}\n{Row3}";
+        }
+        public override int GetHashCode() => base.GetHashCode();
     }
 }

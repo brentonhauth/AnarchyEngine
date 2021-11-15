@@ -34,9 +34,48 @@ namespace AnarchyRunner {
             ThrowCubesDemo();
         }
 
+        private static void TestMatrixMultSpeed() {
+            float r() => Maths.RandRange(0, 100);
+
+            const int len = 100;
+
+            var matrices = new Matrix4[len];
+            for (int i = 0; i < len; ++i) {
+                matrices[i] = new Matrix4(
+                    r(), r(), r(), r(),
+                    r(), r(), r(), r(),
+                    r(), r(), r(), r(),
+                    r(), r(), r(), r());
+            }
+
+            void t1(Matrix4[] mats) {
+                var sw = Stopwatch.StartNew();
+                for (int i = 0; i < len-1; ++i) {
+                    Matrix4 result = mats[i] * mats[i + 1];
+                }
+                sw.Stop();
+                Console.WriteLine($"Test1: {sw.Elapsed}");
+            }
+
+            void t2(Matrix4[] mats) {
+                var sw = Stopwatch.StartNew();
+                for (int i = 0; i < len-1; ++i) {
+                    Matrix4.Multiply(in mats[i], in mats[i + 1], out Matrix4 result);
+                }
+                sw.Stop();
+                Console.WriteLine($"Test2: {sw.Elapsed}\n");
+            }
+
+            t1(matrices);
+            t2(matrices);
+
+            Console.ReadKey();
+        }
+
+        
         private static void ThrowCubesDemo() {
+            World.Init();
             Scene scene = new Scene();
-            List<Entity> entities = new List<Entity>();
             wolfMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\wolf.fbx", VertexProperty.All);
 
             
@@ -45,19 +84,19 @@ namespace AnarchyRunner {
             //var tex = new Texture(@"\Resources\img2.jpg");
             //planeMesh.AddTexture(tex);
 
-            Entity planeEntity = new Entity("PLANE_ENTITY");
-            var planeFilter = planeEntity.AddComponent<MeshFilter>();
+            Entity planeEntity = new Entity();
+            var planeTransform = planeEntity.Add<Transform>();
+            var planeFilter = planeEntity.Add<MeshFilter>();
+            planeEntity.Add<EmptyRigidBody>();
             planeFilter.Mesh = planeMesh;
             planeFilter.Material = Material.Default;
-            planeEntity.Transform.Position = new Vector3(0f, -1f, 0f);
-            planeEntity.Transform.Scale = new Vector3(50f, 1, 50f);
-            planeEntity.AddComponent<EmptyRigidBody>();
-            planeEntity.AddComponent<BoxCollider>().Size = planeEntity.Transform.Scale;
-            scene.Add(planeEntity);
-
+            planeTransform.Position = new Vector3(0f, -1f, 0f);
+            planeTransform.Scale = new Vector3(50f, 1, 50f);
             
-            scene.Add(SpawnWolf());
-            scene.Add(SpawnDuck());
+            planeEntity.Add<BoxCollider>().Size = planeTransform.Scale;
+            SpawnWolf();
+            SpawnDuck();
+
 
             Queue<Entity> cubes = new Queue<Entity>();
             
@@ -66,7 +105,7 @@ namespace AnarchyRunner {
                     if (Input.IsKeyPressed(Key.F)) {
                         var cam = Camera.Main;
                         var entity = AddBox((1.1f * cam.Front) + cam.Position, cam.Front * 5f, null);
-                        scene.Add(entity);
+                        // scene.Add(entity);
                         cubes.Enqueue(entity);
                     }
                     if (Input.IsKeyPressed(Key.Q)) {
@@ -81,7 +120,7 @@ namespace AnarchyRunner {
 
             Entity cubeEnt = AddBox(Vector3.Zero, Vector3.Zero, null);// new Entity("CUBE_ENT");
 
-            scene.Add(cubeEnt);
+            //scene.Add(cubeEnt);
 
             Vector2 _lastPos = Vector2.Zero;
             bool _firstMove = true;
@@ -92,7 +131,6 @@ namespace AnarchyRunner {
                     if (Input.IsKeyDown(Key.P)) {
                         zoinks = false;
                         Camera.Main.printtThing();
-                        cubeEnt.Transform.printThing();
                     }
 
                     const float sensitivity = .3f;
@@ -133,40 +171,41 @@ namespace AnarchyRunner {
             World.Run("yee", 1000, 640);
         }
 
-
         private static Entity SpawnDuck() {
             var duckMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\Duck.fbx", VertexProperty.All);
-            Entity duckEntity = new Entity("DUCK_ENTITY");
-            var filter = duckEntity.AddComponent<MeshFilter>();
+            Entity duckEntity = new Entity();
+            var duckTransform = duckEntity.Add<Transform>();
+            var filter = duckEntity.Add<MeshFilter>();
             filter.Mesh = duckMesh;
             filter.Material = new Material {
                 Color = Color.Green
             };
-            duckEntity.Transform.Position = new Vector2(.5f, -.5f).Z0;
-            duckEntity.Transform.Scale *= .15f;
+            duckTransform.Position = new Vector2(.5f, -.5f).Z0;
+            duckTransform.Scale *= .15f;
             return duckEntity;
         }
 
         private static Entity SpawnWolf(Mesh mesh=null) {
-            Entity wolfEntity = new Entity("WOLF_ENTITY");
-            var filter = wolfEntity.AddComponent<MeshFilter>();
+            Entity wolfEntity = new Entity();
+            var wolfTransform = wolfEntity.Add<Transform>();
+            var filter = wolfEntity.Add<MeshFilter>();
             filter.Mesh = mesh ?? wolfMesh;
             filter.Material = new Material {
                 Color = Color.OrangeRed
             };
-            wolfEntity.Transform.Position = -Vector3.UnitY * .5f;
-            wolfEntity.Transform.Scale *= .01f;
+            wolfTransform.Position = -Vector3.UnitY * .5f;
+            wolfTransform.Scale *= .01f;
             return wolfEntity;
 
         }
 
         private static Entity AddBox(in Vector3 position, in Vector3 velocity, Mesh mesh) {
-
             bool useCube = mesh == null;
             Entity entity = new Entity();
-            var mf = entity.AddComponent<MeshFilter>();
-            var rb = entity.AddComponent<RigidBody>();
-            var bc = entity.AddComponent<BoxCollider>();
+            var transform = entity.Add<Transform>();
+            var mf = entity.Add<MeshFilter>();
+            var rb = entity.Add<RigidBody>();
+            var bc = entity.Add<BoxCollider>();
             mf.Mesh = mesh ?? Mesh.Cube;
             mf.Material = new Material {
                 Color = Color.FireBrick
@@ -179,8 +218,8 @@ namespace AnarchyRunner {
             }
             rb.Mass = 100f;
             rb.AffectedByGravity = true;
-            entity.Transform.Scale *= useCube ? 1 : .01f;
-            entity.Transform.Position = position;
+            transform.Scale *= useCube ? 1 : .01f;
+            transform.Position = position;
             return entity;
         }
     }

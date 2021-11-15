@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace AnarchyEngine.Util {
     public static class Utilities {
+
+        internal static string CreateGuid() {
+            return Guid.NewGuid().ToString("N");
+        }
         public static void Swap<T>(ref T var0, ref T var1) {
             T temp = var0;
             var0 = var1;

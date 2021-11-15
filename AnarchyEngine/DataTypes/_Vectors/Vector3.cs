@@ -4,7 +4,7 @@ using Jitter.LinearMath;
 using Assimp;
 
 namespace AnarchyEngine.DataTypes {
-    public struct Vector3 {
+    public struct Vector3 : IEquatable<Vector3> {
         #region Static Readonly Vector3 Variables
         public static readonly Vector3 One = new Vector3(1f),
             Zero = new Vector3(0f),
@@ -26,8 +26,8 @@ namespace AnarchyEngine.DataTypes {
                     case 0: return X;
                     case 1: return Y;
                     case 2: return Z;
+                    default: throw new IndexOutOfRangeException();
                 }
-                throw new IndexOutOfRangeException();
             } set {
                 switch (index) {
                     case 0: X = value; break;
@@ -98,32 +98,40 @@ namespace AnarchyEngine.DataTypes {
         }
 
         public static float Dot(Vector3 u, Vector3 v) {
-            Dot(ref u, ref v, out float result);
+            Dot(in u, in v, out float result);
             return result;
         }
-        public static void Dot(ref Vector3 u, ref Vector3 v, out float result) {
+        public static void Dot(in Vector3 u, in Vector3 v, out float result) {
             result = (u.X * v.X) + (u.Y * v.Y) + (u.Z * v.Z);
         }
 
         public static Vector3 Cross(Vector3 u, Vector3 v) {
-            return new Vector3(
-                x: (u.Y * v.Z) - (u.Z * v.Y),
-                y: (u.Z * v.X) - (u.X * v.Z),
-                z: (u.X * v.Y) - (u.Y * v.X));
+            Cross(in u, in v, out Vector3 prod);
+            return prod;
+        }
+        public static void Cross(in Vector3 u, in Vector3 v, out Vector3 prod) {
+            prod.X = (u.Y * v.Z) - (u.Z * v.Y);
+            prod.Y = (u.Z * v.X) - (u.X * v.Z);
+            prod.Z = (u.X * v.Y) - (u.Y * v.X);
         }
 
         public static float Angle(Vector3 u, Vector3 v) {
             float magx = u.Magnitude * v.Magnitude;
             if (magx == 0) return 0f;
-            double acos = Math.Acos(Dot(u, v) / magx);
-            return Maths.Rad2Deg((float)acos);
+            float acos = Maths.Acos(Dot(u, v) / magx);
+            return Maths.Rad2Deg(acos);
         }
         
         public Vector3 Projection(Vector3 against) => Projection(this, against);
         public static Vector3 Projection(Vector3 self, Vector3 against) {
-            return Dot(against, self) / against.MagnitudeSquared * against;
+            Projection(self, against, out Vector3 proj);
+            return proj;
         }
 
+        public static void Projection(in Vector3 self, in Vector3 against, out Vector3 proj) {
+            Dot(self, against, out float dot);
+            Multiply(against, dot / against.MagnitudeSquared, out proj);
+        }
 
         public static void Add(in Vector3 left, in Vector3 right, out Vector3 sum) {
             sum.X = left.X + right.X;
@@ -218,7 +226,12 @@ namespace AnarchyEngine.DataTypes {
         #region Vector3 Overrides
         public override string ToString() => $"({X}, {Y}, {Z})";
         public override bool Equals(object o) {
-            return o is Vector3 && this == (Vector3)o;
+            return o is Vector3 v && Equals(v);
+        }
+        public bool Equals(Vector3 other) {
+            return X == other.X &&
+                   Y == other.Y &&
+                   Z == other.Z;
         }
         public override int GetHashCode() {
             const int n = -1521134295;

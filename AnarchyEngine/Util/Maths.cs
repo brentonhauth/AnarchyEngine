@@ -76,6 +76,8 @@ namespace AnarchyEngine.Util {
 
         public static float Cos(float a) => (float)Math.Cos(a);
 
+        public static float Acos(float a) => (float)Math.Acos(a);
+
         public static float Tan(float a) => (float)Math.Tan(a);
 
         public static float Sqrt(float a) => (float)Math.Sqrt(a);
