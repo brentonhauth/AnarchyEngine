@@ -21,8 +21,13 @@ namespace AnarchyEngine.Core {
         private Matrix4 m_perspective = Matrix4.Identity;
 
         public Camera(Vector3 position, float aspectRatio) {
-            Position = position;
+            Position = Vector3.UnitZ * 2;// position;
             AspectRatio = aspectRatio;
+            Console.WriteLine(ViewProjection);
+        }
+
+        public void printtThing() {
+            Console.WriteLine(ViewProjection);
         }
 
         public Vector3 Position { get; set; }
@@ -76,8 +81,7 @@ namespace AnarchyEngine.Core {
             //m_front.Y = Maths.Sin(m_pitch);
             //m_front.Z = Maths.Cos(m_pitch) * Maths.Sin(m_yaw);
 
-            Front = Maths.CalculateFront(m_pitch, m_yaw);
-            Front = Front.Normalized;
+            Front = Maths.CalculateFront(m_pitch, m_yaw).Normalized;
             Right = Vector3.Cross(Front, Vector3.UnitY).Normalized;
             Up = Vector3.Cross(Right, Front).Normalized;
         }

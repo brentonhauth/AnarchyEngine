@@ -19,7 +19,7 @@ namespace AnarchyEngine.Core {
         internal static void Update(in double time) {
             DeltaTime = (float)time;
             TotalTime += DeltaTime;
-            Ticks++;
+            ++Ticks;
         }
     }
 }

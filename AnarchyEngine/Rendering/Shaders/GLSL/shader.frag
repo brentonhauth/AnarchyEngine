@@ -1,5 +1,4 @@
 ﻿#version 330 core
-// From OpenTK Tutorial
 uniform vec3 uColor;
 uniform sampler2D texture0;
 uniform vec3 viewPos;

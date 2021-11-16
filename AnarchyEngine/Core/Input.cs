@@ -19,12 +19,12 @@ namespace AnarchyEngine.Core {
             set => Mouse.SetPosition(value.X, value.Y);
         }
 
-        public static bool IsKeyDown(Key key) => CurrentKeyboardState.IsKeyDown((OpenTK.Input.Key)key);
+        public static bool IsKeyDown(Key key) => CurrentKeyboardState.IsKeyDown((short)key);
 
-        public static bool IsKeyUp(Key key) => CurrentKeyboardState.IsKeyUp((OpenTK.Input.Key)key);
+        public static bool IsKeyUp(Key key) => CurrentKeyboardState.IsKeyUp((short)key);
 
         public static bool IsKeyPressed(Key key) {
-            return IsKeyDown(key) && !PrevKeyboardState.IsKeyDown((OpenTK.Input.Key)key);
+            return IsKeyDown(key) && !PrevKeyboardState.IsKeyDown((short)key);
         }
     }
 

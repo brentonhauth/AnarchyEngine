@@ -3,7 +3,7 @@ using AnarchyEngine.Util;
 using Assimp;
 
 namespace AnarchyEngine.DataTypes {
-    public struct Vector2 {
+    public struct Vector2 : IEquatable<Vector2> {
         #region Static Readonly Vector2 Variables
         public static readonly Vector2 One = new Vector2(1f),
             Zero = new Vector2(0f),
@@ -76,11 +76,11 @@ namespace AnarchyEngine.DataTypes {
         public static float DistanceSquared(Vector2 a, Vector2 b) => (a - b).MagnitudeSquared;
 
         public static float Dot(Vector2 u, Vector2 v) {
-            Dot(ref u, ref v, out float result);
+            Dot(in u, in v, out float result);
             return result;
         }
 
-        public static void Dot(ref Vector2 u, ref Vector2 v, out float result) {
+        public static void Dot(in Vector2 u, in Vector2 v, out float result) {
             result = (u.X * v.X) + (u.Y * v.Y);
         }
 
@@ -174,7 +174,10 @@ namespace AnarchyEngine.DataTypes {
         #region Vector2 Overrides
         public override string ToString() => $"({X}, {Y})";
         public override bool Equals(object o) {
-            return o is Vector2 && this == (Vector2)o;
+            return o is Vector2 v && Equals(v);
+        }
+        public bool Equals(Vector2 other) {
+            return X == other.X && Y == other.Y;
         }
         public override int GetHashCode() {
             const int n = -1521134295;

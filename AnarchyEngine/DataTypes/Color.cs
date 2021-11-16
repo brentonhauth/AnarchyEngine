@@ -9,7 +9,7 @@ using OpenTK.Graphics;
 using SysColor = System.Drawing.Color;
 
 namespace AnarchyEngine.DataTypes {
-    public struct Color {
+    public struct Color : IEquatable<Color> {
         #region Named Colors
         public static Color AliceBlue => new Color(240, 248, 255);
         public static Color AntiqueWhite => new Color(250, 235, 215);
@@ -173,28 +173,12 @@ namespace AnarchyEngine.DataTypes {
             get => ToHex(this);
             set => this = FromHex(value);
         }
-        /*
-        public float R {
-            get => ToRange(Red);
-            set => FromRange(value, out Red);
-        }
-
-        public float G {
-            get => ToRange(Green);
-            set => FromRange(value, out Green);
-        }
-
-        public float B {
-            get => ToRange(Blue);
-            set => FromRange(value, out Blue);
-        }
-        */
 
         public Color(float r, float g, float b, float a=1f) {
-            FromRange(r, out R);
-            FromRange(g, out G);
-            FromRange(b, out B);
-            FromRange(a, out A);
+            FromRange(in r, out R);
+            FromRange(in g, out G);
+            FromRange(in b, out B);
+            FromRange(in a, out A);
         }
 
         public Color(byte r, byte g, byte b, byte a=byte.MaxValue) {
@@ -253,10 +237,17 @@ namespace AnarchyEngine.DataTypes {
         public static implicit operator Color(Color4 c) => new Color(c.R, c.G, c.B, c.A);
         public static implicit operator Color4(Color c) => new Color4(c.R, c.G, c.B, c.A);
         public static implicit operator Color(SysColor c) => new Color(c.R, c.G, c.B, c.A);
-        public static implicit operator SysColor(Color c) => SysColor.FromArgb(c.R, c.B, c.G, c.A);
+        public static implicit operator SysColor(Color c) => SysColor.FromArgb(c.A, c.R, c.G, c.B);
+
 
         public override bool Equals(object o) {
-            return o is Color && this == (Color)o;
+            return o is Color c && Equals(c);
+        }
+        public bool Equals(Color other) {
+            return R == other.R &&
+                   G == other.G &&
+                   B == other.B &&
+                   A == other.A;
         }
 
         public override int GetHashCode() {
@@ -268,5 +259,6 @@ namespace AnarchyEngine.DataTypes {
             code = code * n + A.GetHashCode();
             return code;
         }
+
     }
 }

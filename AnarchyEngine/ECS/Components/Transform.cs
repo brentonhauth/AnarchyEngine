@@ -1,10 +1,9 @@
-﻿using System;
-using AnarchyEngine.DataTypes;
+﻿using AnarchyEngine.DataTypes;
 using Quaternion = OpenTK.Quaternion;
 using Matrix4 = OpenTK.Matrix4;
 
-namespace AnarchyEngine.ECS {
-    public sealed class Transform {
+namespace AnarchyEngine.ECS.Components {
+    public class Transform : Component {
         private Vector3 m_Position, m_Scale;
         private Quaternion m_Rotation;
 
@@ -12,9 +11,8 @@ namespace AnarchyEngine.ECS {
             get => m_Position;
             set {
                 m_Position = value;
-                var e = Entity;
-                var v = e.Events;
-                v.RaiseUpdatePosition(ref m_Position);
+                
+                Entity?.Events?.RaiseUpdatePosition(ref m_Position);
             }
         }
 
@@ -22,7 +20,7 @@ namespace AnarchyEngine.ECS {
             get => m_Scale;
             set {
                 m_Scale = value;
-                Entity.Events.RaiseUpdateScale(ref m_Scale);
+                Entity?.Events?.RaiseUpdateScale(ref m_Scale);
             }
         }
 
@@ -30,16 +28,14 @@ namespace AnarchyEngine.ECS {
             get => m_Rotation;
             set {
                 m_Rotation = value;
-                Entity.Events.RaiseUpdateRotation(ref m_Rotation);
+                Entity?.Events?.RaiseUpdateRotation(ref m_Rotation);
             }
         }
 
-        public Entity Entity { get; private set; }
-
-        public Matrix4 Model => Matrix4.CreateScale(Scale)
+        public DataTypes.Matrix4 Model => Matrix4.CreateScale(Scale)
             * Matrix4.CreateFromQuaternion(Rotation)
             * Matrix4.CreateTranslation(Position);
-        
+
         public Transform(Entity entity) {
             Entity = entity;
             Position = Vector3.Zero;

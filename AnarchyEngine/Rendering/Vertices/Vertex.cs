@@ -18,9 +18,9 @@ namespace AnarchyEngine.Rendering.Vertices {
     public struct Vertex : IEquatable<Vertex> /*MIConvexHull.IVertex*/ {
 
         public static int Stride(VertexProperty p) {
-            return ((p & VertexProperty.UV) == VertexProperty.UV ? 2 : 0) +
-                ((p & VertexProperty.Position) == VertexProperty.Position ? 3 : 0) +
-                ((p & VertexProperty.Normal) == VertexProperty.Normal ? 3 : 0);
+            return ((p & VertexProperty.UV) != 0 ? 2 : 0) +
+                ((p & VertexProperty.Position) != 0 ? 3 : 0) +
+                ((p & VertexProperty.Normal) != 0 ? 3 : 0);
         }
 
         public Vector3 Position;
@@ -53,27 +53,26 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         public float[] OnlyRaw(int stride) {
             var raw = new float[stride];
-            int i = 0;
-
-            if (stride >= 3) {
-                raw[i++] = Position.X;
-                raw[i++] = Position.Y;
-                raw[i++] = Position.Z;
-            }
-            if (stride >= 6) {
-                raw[i++] = Normal.X;
-                raw[i++] = Normal.Y;
-                raw[i++] = Normal.Z;
-            }
-            if (stride >= 8) {
-                raw[i++] = UV.X;
-                raw[i++] = UV.Y;
-            }
-
+            OnlyRawNonAloc(raw);
             return raw;
         }
 
-        
+        public void OnlyRawNonAloc(float[] raw) {
+            if (raw.Length >= 3) {
+                raw[0] = Position.X;
+                raw[1] = Position.Y;
+                raw[2] = Position.Z;
+            }
+            if (raw.Length >= 6) {
+                raw[3] = Normal.X;
+                raw[4] = Normal.Y;
+                raw[5] = Normal.Z;
+            }
+            if (raw.Length >= 8) {
+                raw[6] = UV.X;
+                raw[7] = UV.Y;
+            }
+        }
 
 
         public Vertex[] FromPositions(float[] positions) {
@@ -122,7 +121,7 @@ namespace AnarchyEngine.Rendering.Vertices {
                    left.UV != right.UV;
         }
 
-        public bool Equals(Vertex v) => QuickEquals(v);
+        public bool Equals(Vertex v) => this == v;
 
         public bool QuickEquals(Vertex v) => Position == v.Position;
 

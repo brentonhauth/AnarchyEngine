@@ -14,6 +14,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.2</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,20 +35,37 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.2</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
     </Reference>
+    <Reference Include="DefaultEcs, Version=0.17.0.0, Culture=neutral, PublicKeyToken=0ab8f459261ccb3c, processorArchitecture=MSIL">
+      <HintPath>..\packages\DefaultEcs.0.17.0\lib\netstandard2.0\DefaultEcs.dll</HintPath>
+    </Reference>
     <Reference Include="Jitter, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\JitterPhysics.0.2.0.20\lib\net4\Jitter.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.3.2.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.3.2\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,11 +81,13 @@
     <Compile Include="Core\Scene.cs" />
     <Compile Include="Core\SceneManager.cs" />
     <Compile Include="Core\Scheduler.cs" />
+    <Compile Include="Core\SubSystem.cs" />
     <Compile Include="Core\Time.cs" />
     <Compile Include="Core\Window.cs" />
     <Compile Include="Core\World.cs" />
     <Compile Include="DataTypes\Color.cs" />
     <Compile Include="DataTypes\Pool.cs" />
+    <Compile Include="DataTypes\Ray.cs" />
     <Compile Include="DataTypes\Updatable.cs" />
     <Compile Include="DataTypes\_Matrices\ISquareMatrix.cs" />
     <Compile Include="DataTypes\_Matrices\Matrix2.cs" />
@@ -75,17 +96,19 @@
     <Compile Include="DataTypes\_Vectors\Vector2.cs" />
     <Compile Include="DataTypes\_Vectors\Vector3.cs" />
     <Compile Include="DataTypes\_Vectors\Vector4.cs" />
+    <Compile Include="ECS\Components\ComponentMetaAttribute.cs" />
     <Compile Include="ECS\Components\Collider.cs" />
     <Compile Include="ECS\Components\Component.cs" />
     <Compile Include="ECS\Components\MeshFilter.cs" />
     <Compile Include="ECS\Components\RigidBody.cs" />
+    <Compile Include="ECS\Components\Transform.cs" />
+    <Compile Include="ECS\ECS.cs" />
     <Compile Include="ECS\Entity.cs" />
-    <Compile Include="ECS\Transform.cs" />
     <Compile Include="Physics\BBox.cs" />
     <Compile Include="Physics\Collision.cs" />
     <Compile Include="Physics\Geometry.cs" />
-    <Compile Include="Physics\PhysicsSystem.cs" />
     <Compile Include="Platform\OpenGL\OpenGLApi.cs" />
+    <Compile Include="Physics\Physics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\IPipable.cs" />
     <Compile Include="Rendering\Material.cs" />
@@ -101,12 +124,17 @@
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexBuffer.cs" />
     <Compile Include="Util\ArrayHelper.cs" />
+    <Compile Include="Util\ComponentHelper.cs" />
     <Compile Include="Util\FileHelper.cs" />
     <Compile Include="Util\Logger.cs" />
     <Compile Include="Util\Maths.cs" />
+    <Compile Include="Util\Recycler.cs" />
+    <Compile Include="Util\Ref.cs" />
+    <Compile Include="Util\TypeHelper.cs" />
     <Compile Include="Util\Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Rendering\Shaders\GLSL\flat.frag" />
@@ -114,7 +142,6 @@
     <None Include="Rendering\Shaders\GLSL\shader.frag" />
     <None Include="Rendering\Shaders\GLSL\shader.vert" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

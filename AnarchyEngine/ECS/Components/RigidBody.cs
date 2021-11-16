@@ -1,26 +1,21 @@
 ﻿using System;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.ES20;
-using AnarchyEngine.Util;
-using AnarchyEngine.Physics;
 using AnarchyEngine.Rendering.Shaders;
-using AnarchyEngine.Rendering.Vertices;
-using Jitter;
+using AnarchyEngine.Rendering.Mesh;
 using Jitter.LinearMath;
 using Jitter.Collision.Shapes;
-using Jitter.Dynamics;
 using JRigidBody = Jitter.Dynamics.RigidBody;
-using AnarchyEngine.Rendering.Mesh;
 
 namespace AnarchyEngine.ECS.Components {
+    [RequireComponents(typeof(Transform))]
     public class RigidBody : Component {
         private static DebugDrawer drawer = new DebugDrawer();
         private static readonly BoxShape EmptyShape = new BoxShape(JVector.Zero);
 
         public static bool DebugMode = false;
 
-        public JRigidBody Body { get; protected set; }
+        internal JRigidBody Body { get; set; }
 
         private bool _ReceivedShapeFromCollider;
         private JVector _LastPosition = JVector.Zero;
@@ -69,14 +64,15 @@ namespace AnarchyEngine.ECS.Components {
             if (DebugMode) drawer.Init();
 
             if (!_ReceivedShapeFromCollider) {
-                var collider = Entity.GetComponent<Collider>();
+                var collider = Entity.Get<BoxCollider>();
                 if (collider) {
                     Body.Shape = collider.Shape;
                     _ReceivedShapeFromCollider = true;
+
                 }
             }
 
-            var transform = Entity.Transform;
+            var transform = Entity.Get<Transform>();
             var rotation = transform.Rotation;
             
             /*Body.Material.Restitution = float.MinValue;
@@ -87,7 +83,7 @@ namespace AnarchyEngine.ECS.Components {
 
             Body.Orientation = (DataTypes.Matrix3)orientation;
             Body.Position = transform.Position;
-            PhysicsSystem.Add(Body);
+            //Physics.Physics.Add(Body);
         }
 
         #region Event Listeners
@@ -104,16 +100,13 @@ namespace AnarchyEngine.ECS.Components {
         }
 
         private void AddedComponentListener(Component comp) {
+            Console.WriteLine("ADDED COMP");
             if (comp is RigidBody && comp.Id != Id) {
                 throw new Exception();
-            } else if (!(comp is Collider)) {
-                return;
-            }
-
-            var collider = comp as Collider;
-            if (collider) {
+            } else if (comp is BoxCollider collider) {
                 Body.Shape = collider.Shape;
                 _ReceivedShapeFromCollider = true;
+                Console.WriteLine("OWOOWOWOOWOWO");
             }
         }
         #endregion
@@ -131,7 +124,7 @@ namespace AnarchyEngine.ECS.Components {
             if (IsStatic) return;
             // Body.Update();
 
-            var transform = Entity.Transform;
+            var transform = Entity.Get<Transform>();
             transform.SetPositionSilently(Body.Position);
             
             JMatrix m = Body.Orientation;
@@ -155,7 +148,7 @@ namespace AnarchyEngine.ECS.Components {
             Entity.Events.UpdateRotation -= UpdateRotationListener;
             Entity.Events.AddedComponent -= AddedComponentListener;
             if (Body != null) {
-                PhysicsSystem.Remove(Body);
+                Physics.Physics.Remove(Body);
             }
         }
     }

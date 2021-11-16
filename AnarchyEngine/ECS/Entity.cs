@@ -6,170 +6,111 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DefaultEcs;
+using AnarchyEngine.Util;
+using System.Runtime.CompilerServices;
 
 namespace AnarchyEngine.ECS {
-    public class Entity : Core.Object {
+    [Flags]
+    public enum EntityFlags {
+        None = 0,
+        HasRigidBody = 1,
+        Renderable = 2,
+    }
 
-        private static uint IdCount = 0;
-
-        private static readonly List<Entity> AllEntities; // Remove (?)
+    public class Entity : IDisposable, IEquatable<Entity> {
+        public bool IsAlive => Handle.IsAlive;
         
+        internal DefaultEcs.Entity Handle { get; set; }
 
-        public readonly uint Id;
-
-        private readonly List<Component> Components;
-
-        private readonly List<Entity> Children;
-
-        public string Name { get; set; }
-
-        public Entity Parent { get; private set; }
-
-        public Transform Transform { get; }
-        
         internal EntityEvents Events { get; }
 
+        public EntityFlags Flags { get; internal set; } = 0;
 
-        static Entity() {
-            AllEntities = new List<Entity>(0);
-        }
-
-        public Entity() : this($"Entity_{Time.EpochNow}") { }
-
-        public Entity(string name) {
-            Id = ++IdCount;
-            Name = name;
-            Components = new List<Component>();
-            Children = new List<Entity>();
+        internal Entity(DefaultEcs.Entity handle) {
+            Handle = handle;
+            CoreECS.Register(Handle, this);
             Events = new EntityEvents();
-            Transform = new Transform(this);
-            AllEntities.Add(this);
         }
 
-        public T GetComponent<T>() where T : Component {
-            return Components.AsParallel().FirstOrDefault(c => c is T) as T;
+        public Entity() : this(CoreECS.CreateEntityHandle()) { }
+
+        ~Entity() {
+            CoreECS.Register(Handle, null);
         }
 
-        // Remove (?)
-        public void AddComponent(Component component) {
-            Type type = component.GetType();
-            if (component is ISingleComponent) {
-                foreach (Component comp in Components) {
-                    if (type.IsInstanceOfType(comp)) {
-                        throw new Exception();
-                    }
-                }
+        public T Get<T>() where T : Component {
+            ComponentHelper.Assert<T>();
+            return Handle.Get<T>();
+        }
+
+        public T Add<T>() where T : Component {
+            ComponentHelper.Assert<T>();
+            if (!ComponentHelper.AllowMultiple<T>() && Handle.Has<T>()) {
+                throw new Exception($"Already has a component of type {typeof(T).Name}");
             }
-            component.Entity = this;
-            component.AppendTo(this);
-            Events.RaiseAddedComponent(component);
-            Components.Add(component);
-        }
-
-        public T AddComponent<T>() where T : Component {
-            if (typeof(T) == typeof(Component)) {
-                throw new Exception();
-            }
+            //if (typeof(T).Ba)
             T component = Activator.CreateInstance<T>();
             component.AppendTo(this);
-            Components.Add(component);
             Events.RaiseAddedComponent(component);
+            Handle.Set(component);
             return component;
         }
 
-        public Entity FindChildByName(string name, bool deep = false) {
-            if (!deep) {
-                return Children.AsParallel().FirstOrDefault(e => e.Name == name);
-            }
-
-            foreach (Entity entity in Children) {
-                if (entity.Name == name) {
-                    return entity;
-                }
-                var result = entity.FindChildByName(name, true);
-
-                if (result != null) {
-                    return result;
-                }
-            }
-            return null;
+        public bool Has<T>() where T : Component {
+            ComponentHelper.Assert<T>();
+            return Handle.Has<T>();
+        }
+        public bool Has<T>(out T component) where T : Component {
+            ComponentHelper.Assert<T>();
+            component = Handle.Has<T>() ? Handle.Get<T>() : null;
+            return component;
         }
 
-        public bool HasChildWithName(string name, out Entity child, bool deep = false) {
-            child = FindChildByName(name, deep);
-            return child;
+        public bool IsEnabled() => Handle.IsEnabled();
+        public bool IsEnabled<T>() where T : Component {
+            ComponentHelper.Assert<T>();
+            return Handle.IsEnabled<T>();
         }
 
-        public IEnumerable<Entity> FlattenWithChildren() {
-            var x = Children.AsParallel().SelectMany(e => {
-                return e.FlattenWithChildren();
-            }).ToList();
-            x.Insert(0, this);
-            return x;
+        public void Enable() => Handle.Enable();
+        public void Enable<T>() where T : Component {
+            ComponentHelper.Assert<T>();
+            Handle.Enable<T>();
         }
 
-        public static Entity FindByName(string name) {
-            return Scene.Current?.FindEntityInScene(name);
+        public void Disable() => Handle.Disable();
+        public void Disable<T>() where T : Component {
+            ComponentHelper.Assert<T>();
+            Handle.Disable<T>();
         }
 
-        public override void Init() {
-            base.Init();
-            int i = 0;
-            for (; i < Components.Count; i++)
-                Components[i].Init();
-            for (i = 0; i < Children.Count; i++)
-                Children[i].Init();
+        public void Dispose() {
+            CoreECS.Register(Handle, null);
+            Handle.Dispose();
         }
 
-        public override void Start() {
-            base.Start();
-            int i = 0;
-            for (; i < Components.Count; i++)
-                Components[i].Start();
-            for (i = 0; i < Children.Count; i++)
-                Children[i].Start();
+        public static bool operator ==(Entity left, Entity right) {
+            return left.Handle == right.Handle;
+        }
+        public static bool operator !=(Entity left, Entity right) {
+            return left?.Handle != right?.Handle;
         }
 
-        public override void Render() {
-            int i = 0;
-            for (; i < Components.Count; i++)
-                Components[i].Render();
-            for (i = 0; i < Children.Count; i++)
-                Children[i].Render();
+        public static implicit operator bool(Entity e) => e != null;
+
+        public override bool Equals(object o) {
+            return o is Entity e && Equals(e);
+        }
+        public bool Equals(Entity e) {
+            return Handle == e.Handle;
         }
 
-        public override void Update() {
-            int i = 0;
-            for (; i < Components.Count; i++)
-                Components[i].Update();
-            for (i = 0; i < Children.Count; i++)
-                Children[i].Update();
-
+        public override int GetHashCode() {
+            return 1786700523 + Handle.GetHashCode();
         }
 
-        public void SetParent(Entity entity) {
-            // ...
-            Parent = entity;
-        }
-
-        public void AddChild(Entity entity) {
-            entity.SetParent(this);
-            Children.Add(entity);
-        }
-
-        public override void Dispose() {
-            int i = 0;
-            for (; i < Components.Count; i++)
-                Components[i].Dispose();
-            for (i = 0; i < Children.Count; i++)
-                Children[i].Dispose();
-        }
-
-        public override string ToString() {
-            return $"Entity: ({Id}, {Name})";
-        }
-
-        #region EntityEvents
+        #region Entity Events
         internal class EntityEvents {
             internal event Action<Component> AddedComponent;
             internal event Action<Vector3> UpdatePosition;
@@ -178,6 +119,13 @@ namespace AnarchyEngine.ECS {
 
             internal EntityEvents() { }
 
+            internal void ClearAllEvents() {
+                AddedComponent = null;
+                UpdatePosition = null;
+                UpdateScale = null;
+                UpdateRotation = null;
+            }
+
             internal void RaiseAddedComponent(Component c) => AddedComponent?.Invoke(c);
             internal void RaiseUpdatePosition(ref Vector3 p) => UpdatePosition?.Invoke(p);
             internal void RaiseUpdateScale(ref Vector3 s) => UpdateScale?.Invoke(s);
@@ -185,5 +133,4 @@ namespace AnarchyEngine.ECS {
         }
         #endregion
     }
-
 }

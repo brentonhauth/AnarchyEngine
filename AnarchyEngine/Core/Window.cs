@@ -1,10 +1,13 @@
 ﻿using System;
+using AnarchyEngine.DataTypes;
+using AnarchyEngine.ECS;
 using AnarchyEngine.Physics;
 using AnarchyEngine.Rendering;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
+using Vector3 = AnarchyEngine.DataTypes.Vector3;
 
 namespace AnarchyEngine.Core {
     public class Window : GameWindow {
@@ -16,10 +19,9 @@ namespace AnarchyEngine.Core {
         }
 
         protected override void OnLoad(EventArgs e) {
-            GL.ClearColor(Color4.SkyBlue);
+            GL.ClearColor(Color.SkyBlue);
             GL.Enable(EnableCap.DepthTest);
 
-            PhysicsSystem.Init();
             Renderer.Init();
             World.Start();
 
@@ -48,7 +50,7 @@ namespace AnarchyEngine.Core {
         protected override void OnUpdateFrame(FrameEventArgs e) {
             PreUpdate(e);
             // ...
-            PhysicsSystem.Update();
+            Physics.Physics.Update();
             Scheduler.Update();
 
             World.Update();

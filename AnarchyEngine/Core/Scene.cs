@@ -22,49 +22,49 @@ namespace AnarchyEngine.Core {
         }
 
         public Entity FindEntityInScene(string name) {
-            foreach (Entity e in EntitiesInScene) {
+            /*foreach (Entity e in EntitiesInScene) {
                 if (name == e.Name) return e;
                 var result = e.FindChildByName(name, true);
                 if (result) return result;
-            }
+            }*/
             return null;
         }
         
         public void Start() {
             Started = true;
             int i = 0;
-            for (; i < EntitiesInScene.Count; i++)
-                EntitiesInScene[i].Start();
+            // for (; i < EntitiesInScene.Count; i++)
+                // EntitiesInScene[i].Start();
             for (i = 0; i < Updatables.Count; i++)
                 Updatables[i].Start();
         }
 
         public void Render() {
             int i = 0;
-            for (; i < EntitiesInScene.Count; i++)
-                EntitiesInScene[i].Render();
+            // for (; i < EntitiesInScene.Count; i++)
+                // EntitiesInScene[i].Render();
             for (i = 0; i < Updatables.Count; i++)
                 Updatables[i].Render();
         }
 
         public void Update() {
             int i = 0;
-            for (; i < EntitiesInScene.Count; i++)
-                EntitiesInScene[i].Update();
+            // for (; i < EntitiesInScene.Count; i++)
+                // EntitiesInScene[i].Update();
             for (i = 0; i < Updatables.Count; i++)
                 Updatables[i].Update();
         }
 
         public void Add(Entity entity) {
-            if (Started) entity.Start();
+            // if (Started) entity.Start();
             EntitiesInScene.Add(entity);
         }
 
         public void Add(params Entity[] entities) {
             if (Started) {
-                foreach (var e in entities) {
-                    e.Start();
-                }
+                /*foreach (var e in entities) {
+                    //e.Start();
+                }*/
             }
             EntitiesInScene.AddRange(entities);
         }
@@ -72,7 +72,7 @@ namespace AnarchyEngine.Core {
         public void Add(IEnumerable<Entity> entities) {
             if (Started) {
                 foreach (var e in entities) {
-                    e.Start();
+                    //e.Start();
                 }
             }
             EntitiesInScene.AddRange(entities);
