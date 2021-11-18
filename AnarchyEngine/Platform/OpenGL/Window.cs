@@ -1,18 +1,18 @@
 ﻿using System;
+using AnarchyEngine.Core;
 using AnarchyEngine.DataTypes;
-using AnarchyEngine.ECS;
-using AnarchyEngine.Physics;
 using AnarchyEngine.Rendering;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
+using Key = AnarchyEngine.Core.Key;
 using Vector3 = AnarchyEngine.DataTypes.Vector3;
 
-namespace AnarchyEngine.Core {
-    public class Window : GameWindow {
+namespace AnarchyEngine.Platform.OpenGL {
+    public class GLWindow : GameWindow {
         
-        internal Window(string title, int width, int height) : base(width, height, GraphicsMode.Default, title) {
+        internal GLWindow(string title, int width, int height) : base(width, height, GraphicsMode.Default, title) {
             X = Y = 30;
             //WindowState = WindowState.Fullscreen;
             Camera.Main = new Camera(Vector3.One * .25f, (float)width / height);
@@ -60,6 +60,10 @@ namespace AnarchyEngine.Core {
             base.OnUpdateFrame(e);
         }
 
+        protected override void OnKeyDown(KeyboardKeyEventArgs e) {
+            base.OnKeyDown(e);
+        }
+
         protected override void OnResize(EventArgs e) {
             GL.Viewport(0, 0, Width, Height);
             Camera.Main.AspectRatio = Width / (float)Height;
@@ -74,7 +78,7 @@ namespace AnarchyEngine.Core {
         }
 
         protected override void OnUnload(EventArgs e) {
-            Renderer.PreCleanupBind();
+            Renderer.PreCleanUp();
             World.Dispose();
             base.OnUnload(e);
         }

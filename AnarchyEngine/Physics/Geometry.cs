@@ -1,5 +1,6 @@
 ﻿using AnarchyEngine.DataTypes;
 using AnarchyEngine.ECS;
+using AnarchyEngine.ECS.Components;
 using AnarchyEngine.Rendering.Vertices;
 using System;
 using System.Collections;

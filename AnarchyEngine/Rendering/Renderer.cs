@@ -4,6 +4,7 @@ using AnarchyEngine.Rendering.Shaders;
 using AnarchyEngine.Rendering.Vertices;
 using OpenTK;
 // using OpenTK.Graphics.ES20;
+using Matrix4 = AnarchyEngine.DataTypes.Matrix4;
 using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,10 @@ namespace AnarchyEngine.Rendering {
     internal static class Renderer {
 
         public static RendererApi Api { get; private set; }
-        
+
         //public static Renderer I { get; private set; }
 
-        public static Camera Camera { get; private set; }
+        private static Camera Camera;
         private static RenderContext CurrentContext;
         private static Matrix4 ViewProjection;
         private static List<RenderContext> Contexts;
@@ -33,16 +34,14 @@ namespace AnarchyEngine.Rendering {
             ScheduleForInit?.Invoke();
         }
 
-        public static void Start() => Api.Start(Camera.Main);
+        public static void Start() => Start(Camera.Main);
 
         public static void Start(Camera camera) {
-            Api.Start(camera);
             Camera = camera;
             ViewProjection = camera.ViewProjection;
         }
 
         public static void Push(Material material, VertexArray va, in Matrix4 transform) {
-            Api.Push(material, va, transform);
             CurrentContext.Material = material;
             CurrentContext.VertexArray = va;
             CurrentContext.Transform = transform;
@@ -60,23 +59,19 @@ namespace AnarchyEngine.Rendering {
         }*/
 
         public static void Submit() {
-            Api.Submit();
             Contexts.Add(CurrentContext);
             CurrentContext = new RenderContext();
         }
 
         public static void Finish() {
-            Api.Finish();
             foreach (var c in Contexts) {
-                
+                Api.Submit(in Camera, in c, ref ViewProjection);
             }
             Contexts.Clear();
         }
         
-        public static void PreCleanupBind() {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindVertexArray(0);
-            GL.UseProgram(0);
+        public static void PreCleanUp() {
+            Api.PreCleanUp();
         }
     }
 

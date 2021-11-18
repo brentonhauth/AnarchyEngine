@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AnarchyEngine.DataTypes {
     public class Pool<T> : IDisposable {
 
-        private Stack<T> Stack = new Stack<T>();
+        private readonly Stack<T> Stack = new Stack<T>();
 
         public T this[int index] {
             get {

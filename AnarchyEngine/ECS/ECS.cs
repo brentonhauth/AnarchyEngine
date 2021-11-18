@@ -19,13 +19,12 @@ namespace AnarchyEngine.ECS {
         public static Entity CreateEntity() {
             var handle = World.CreateEntity();
             var entity = new Entity(handle);
-            Entities.Add(handle, entity);
             return entity;
         }
 
         public static void Register(DefaultEcs.Entity handle, Entity entity) {
             if (entity) {
-                Entities.Add(handle, entity);
+                Entities[handle] = entity;
             } else {
                 Entities.Remove(handle);
             }

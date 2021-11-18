@@ -62,14 +62,12 @@ namespace AnarchyEngine.Rendering {
         }
 
         public static TextureUnit UnitFromInt(int i) {
-            const int magic = 0x84c0;
             i = Maths.Clamp(i, 0, 31);
-            return (TextureUnit)(i + magic);
+            return i + TextureUnit.Texture0;
         }
 
         public static int UnitToInt(TextureUnit unit) {
-            const int magic = 0x84c0;
-            return (int)unit - magic;
+            return unit - TextureUnit.Texture0;
         }
     }
 }

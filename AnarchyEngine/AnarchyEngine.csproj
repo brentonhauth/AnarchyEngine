@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Core\Application.cs" />
     <Compile Include="Core\Camera.cs" />
+    <Compile Include="Core\Events.cs" />
     <Compile Include="Core\Input.cs" />
     <Compile Include="Core\Object.cs" />
     <Compile Include="Core\Scene.cs" />
@@ -83,7 +84,7 @@
     <Compile Include="Core\Scheduler.cs" />
     <Compile Include="Core\SubSystem.cs" />
     <Compile Include="Core\Time.cs" />
-    <Compile Include="Core\Window.cs" />
+    <Compile Include="Platform\OpenGL\Window.cs" />
     <Compile Include="Core\World.cs" />
     <Compile Include="DataTypes\Color.cs" />
     <Compile Include="DataTypes\Pool.cs" />

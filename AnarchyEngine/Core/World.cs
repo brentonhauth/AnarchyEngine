@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AnarchyEngine.Core {
     public static class World {
-        public static Window Window { get; private set; }
+        public static GLWindow Window { get; private set; }
         
         private static Dictionary<string, Scene> Scenes = new Dictionary<string, Scene>(0);
 
@@ -23,7 +23,7 @@ namespace AnarchyEngine.Core {
         }
 
         public static void Run(string title, int width, int height, double fps = 60.0) {
-            using (Window = new Window(title, width, height)) {
+            using (Window = new GLWindow(title, width, height)) {
                 Window.Run(fps);
             }
         }

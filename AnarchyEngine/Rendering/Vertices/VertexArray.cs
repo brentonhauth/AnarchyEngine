@@ -87,7 +87,7 @@ namespace AnarchyEngine.Rendering.Vertices {
         }
 
         public virtual void Draw() {
-            GL.DrawArrays(PrimitiveType.Triangles, 0, Count);
+            
         }
 
         public virtual void Dispose() {
