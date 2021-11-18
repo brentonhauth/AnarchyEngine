@@ -10,7 +10,9 @@ using Key = AnarchyEngine.Core.Key;
 using Vector3 = AnarchyEngine.DataTypes.Vector3;
 
 namespace AnarchyEngine.Platform.OpenGL {
-    public class GLWindow : GameWindow {
+    internal class GLWindow : GameWindow, IWindow, IRunner {
+
+        public IApplication Application { get; private set; }
         
         internal GLWindow(string title, int width, int height) : base(width, height, GraphicsMode.Default, title) {
             X = Y = 30;
@@ -18,44 +20,33 @@ namespace AnarchyEngine.Platform.OpenGL {
             Camera.Main = new Camera(Vector3.One * .25f, (float)width / height);
         }
 
-        protected override void OnLoad(EventArgs e) {
-            GL.ClearColor(Color.SkyBlue);
-            GL.Enable(EnableCap.DepthTest);
+        public void Run(IApplication app) {
+            Application = app;
+            var settings = app.Settings;
+            base.Run(settings.FPS);
+        }
 
-            Renderer.Init();
-            World.Start();
+        protected override void OnLoad(EventArgs e) {
+            Application.Init();
+            Application.Start();
 
             CursorVisible = false;
-            
             base.OnLoad(e);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e) {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
-            Renderer.Start();
-            World.Render();
-            Renderer.Finish();
-
-            SwapBuffers();
-
+            Application.Render();
             base.OnRenderFrame(e);
         }
 
-        private void PreUpdate(FrameEventArgs e) {
-            Time.Update(e.Time);
-            Input.UpdateState();
-        }
-
         protected override void OnUpdateFrame(FrameEventArgs e) {
-            PreUpdate(e);
-            // ...
-            Physics.Physics.Update();
-            Scheduler.Update();
+            float deltaTime = (float)e.Time;
+            Application.PreUpdate(in deltaTime);
+            Application.Update(in deltaTime);
+            Application.PostUpdate(in deltaTime);
 
-            World.Update();
-
-            /*<temp>*/ if (Input.IsKeyPressed(Key.Escape)) Exit();
+            /*<temp>*/
+            if (Input.IsKeyPressed(Key.Escape)) Application.Exit();
 
             base.OnUpdateFrame(e);
         }
@@ -82,5 +73,6 @@ namespace AnarchyEngine.Platform.OpenGL {
             World.Dispose();
             base.OnUnload(e);
         }
+
     }
 }

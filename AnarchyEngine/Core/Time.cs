@@ -16,8 +16,8 @@ namespace AnarchyEngine.Core {
 
         public static ulong Ticks { get; private set; } = 0;
 
-        internal static void Update(in double time) {
-            DeltaTime = (float)time;
+        internal static void Update(in float time) {
+            DeltaTime = time;
             TotalTime += DeltaTime;
             ++Ticks;
         }

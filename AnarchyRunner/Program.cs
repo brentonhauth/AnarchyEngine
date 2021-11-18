@@ -1,22 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnarchyEngine;
 using AnarchyEngine.Core;
 using AnarchyEngine.DataTypes;
 using AnarchyEngine.ECS;
 using AnarchyEngine.ECS.Components;
 using AnarchyEngine.Rendering;
 using AnarchyEngine.Rendering.Mesh;
-using AnarchyEngine.Rendering.Shaders;
 using AnarchyEngine.Rendering.Vertices;
 using AnarchyEngine.Util;
 
 namespace AnarchyRunner {
-    class Program {
+    class Program : Application {
         private static float[] planeVertices = {
             // positions            // normals         // texcoords
              1.0f, 0.5f,  1.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
@@ -30,8 +25,18 @@ namespace AnarchyRunner {
 
         private static Mesh wolfMesh;
 
+        Program(GameSettings settings) : base(settings) { }
+
         static void Main(string[] args) {
-            ThrowCubesDemo();
+            var settings = new GameSettings {
+                Name = "Yee",
+                Width = 1000,
+                Height = 640,
+                FPS = 60f,
+            };
+
+            var app = new Program(settings);
+            app.Run();
         }
 
         private static void TestMatrixMultSpeed() {
@@ -73,8 +78,7 @@ namespace AnarchyRunner {
         }
 
         
-        private static void ThrowCubesDemo() {
-            World.Init();
+        public override void Setup() {
             Scene scene = new Scene();
             wolfMesh = Mesh.LoadFbx($@"{FileHelper.Path}\Resources\wolf.fbx", VertexProperty.All);
 
@@ -168,7 +172,6 @@ namespace AnarchyRunner {
             });
 
             World.AddScene(scene);
-            World.Run("yee", 1000, 640);
         }
 
         private static Entity SpawnDuck() {
@@ -196,7 +199,6 @@ namespace AnarchyRunner {
             wolfTransform.Position = -Vector3.UnitY * .5f;
             wolfTransform.Scale *= .01f;
             return wolfEntity;
-
         }
 
         private static Entity AddBox(in Vector3 position, in Vector3 velocity, Mesh mesh) {

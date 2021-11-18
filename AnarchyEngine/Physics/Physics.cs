@@ -37,7 +37,13 @@ namespace AnarchyEngine.Physics {
 
         internal static void Update() {
             JWorld.Step(Time.DeltaTime, true);
+            
+            var phys = CoreECS.GetPhysicsRelated();
+            foreach (var p in phys) {
+                p.Update();
+            }
         }
+
 
         internal static void Add(JRigidBody rb) => JWorld.AddBody(rb);
 

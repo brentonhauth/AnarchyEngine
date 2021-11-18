@@ -34,8 +34,7 @@ namespace AnarchyEngine.Rendering.Vertices {
         public void Use() => GL.BindBuffer(BufferTarget.ArrayBuffer, Handle);
 
         public void Dispose() {
-            // Console.WriteLine($"VertexBuffer.Dispose -> {Handle}");
-            // GL.DeleteBuffer(Handle);
+            GL.DeleteBuffer(Handle);
         }
     }
 }

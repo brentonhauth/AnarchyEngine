@@ -21,6 +21,8 @@ namespace AnarchyEngine.Rendering {
 
         public abstract void Dispose();
 
+        public abstract void PreRender();
+
         
         public static RendererApi Create() {
             API api = API.OpenGL;

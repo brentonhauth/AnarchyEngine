@@ -1,5 +1,6 @@
 ﻿using AnarchyEngine.DataTypes;
 using AnarchyEngine.ECS;
+using AnarchyEngine.Platform.OpenGL;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES20;
 using System;
@@ -9,8 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AnarchyEngine.Core {
+    
+    [Obsolete("")]
     public static class World {
-        public static GLWindow Window { get; private set; }
         
         private static Dictionary<string, Scene> Scenes = new Dictionary<string, Scene>(0);
 
@@ -22,15 +24,8 @@ namespace AnarchyEngine.Core {
             set => GL.ClearColor(m_SkyBox = value);
         }
 
-        public static void Run(string title, int width, int height, double fps = 60.0) {
-            using (Window = new GLWindow(title, width, height)) {
-                Window.Run(fps);
-            }
-        }
-
         public static void Init() {
-            CoreECS.Init();
-            Physics.Physics.Init();
+            
         }
 
         internal static void Start() {
@@ -39,6 +34,10 @@ namespace AnarchyEngine.Core {
             }
             Camera.Main.Start();
             Scene.Current.Start();
+            var renderable = CoreECS.GetRenderable();
+            foreach (var r in renderable) {
+                r.Start();
+            }
         }
 
         internal static void Render() {
@@ -52,10 +51,7 @@ namespace AnarchyEngine.Core {
         internal static void Update() {
             Camera.Main.Update(); // change camera logic
             Scene.Current.Update();
-            var phys = CoreECS.GetPhysicsRelated();
-            foreach (var p in phys) {
-                p.Update();
-            }
+            
         }
 
         internal static void Dispose() {
@@ -84,8 +80,5 @@ namespace AnarchyEngine.Core {
             Scenes[scene.Name] = scene;
         }
 
-        private static void InitializeECS() {
-            
-        }
     }
 }

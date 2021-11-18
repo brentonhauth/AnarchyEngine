@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnarchyEngine.DataTypes;
 using AnarchyEngine.Rendering;
 using AnarchyEngine.Rendering.Shaders;
@@ -16,9 +12,12 @@ namespace AnarchyEngine.Platform.OpenGL {
         public OpenGLApi() : base() { }
         
         public override void Init() {
+            GL.ClearColor(Color.SkyBlue);
+            GL.Enable(EnableCap.DepthTest);
         }
 
-        public override void Dispose() {
+        public override void PreRender() {
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
         public override void Draw(VertexArray va, Primitive type = Primitive.Triangles) {
@@ -50,6 +49,9 @@ namespace AnarchyEngine.Platform.OpenGL {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
             GL.UseProgram(0);
+        }
+
+        public override void Dispose() {
         }
     }
 }

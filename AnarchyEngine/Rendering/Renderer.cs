@@ -34,6 +34,10 @@ namespace AnarchyEngine.Rendering {
             ScheduleForInit?.Invoke();
         }
 
+        public static void PreRender() {
+            Api.PreRender();
+        }
+
         public static void Start() => Start(Camera.Main);
 
         public static void Start(Camera camera) {
