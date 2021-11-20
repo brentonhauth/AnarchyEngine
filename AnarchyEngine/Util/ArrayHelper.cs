@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -55,6 +56,7 @@ namespace AnarchyEngine.Util {
             return cloned.ToArray();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] Wrap<T>(T item) => new[] { item };
     }
 }

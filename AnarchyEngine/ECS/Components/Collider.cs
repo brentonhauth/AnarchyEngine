@@ -26,6 +26,7 @@ namespace AnarchyEngine.ECS.Components {
         }
     }
 
+    [RegisterComponentAs(typeof(Collider))]
     public class BoxCollider : Collider {
         public Vector3 Size {
             get => (Shape as BoxShape)?.Size ?? Vector3.Zero;

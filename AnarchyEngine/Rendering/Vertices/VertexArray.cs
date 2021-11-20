@@ -92,7 +92,7 @@ namespace AnarchyEngine.Rendering.Vertices {
 
         public virtual void Dispose() {
             VertexBuffer.Dispose();
-            GL.DeleteVertexArray(Handle);
+            // GL.DeleteVertexArray(Handle);
             _Disposed = true;
         }
 

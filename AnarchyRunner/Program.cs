@@ -106,7 +106,7 @@ namespace AnarchyRunner {
             
             scene.Add(new Updatable {
                 OnUpdate = () => {
-                    if (Input.IsKeyPressed(Key.F)) {
+                    if (Input.IsKeyDown(Key.F) && (Time.Ticks % 3) == 0) {
                         var cam = Camera.Main;
                         var entity = AddBox((1.1f * cam.Front) + cam.Position, cam.Front * 5f, null);
                         // scene.Add(entity);

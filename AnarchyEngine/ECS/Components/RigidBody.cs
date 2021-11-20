@@ -64,7 +64,7 @@ namespace AnarchyEngine.ECS.Components {
             if (DebugMode) drawer.Init();
 
             if (!_ReceivedShapeFromCollider) {
-                var collider = Entity.Get<BoxCollider>();
+                var collider = Entity.QuickGet<Collider>();
                 if (collider) {
                     Body.Shape = collider.Shape;
                     _ReceivedShapeFromCollider = true;
@@ -72,7 +72,7 @@ namespace AnarchyEngine.ECS.Components {
                 }
             }
 
-            var transform = Entity.Get<Transform>();
+            var transform = Entity.QuickGet<Transform>();
             var rotation = transform.Rotation;
             
             /*Body.Material.Restitution = float.MinValue;
@@ -121,10 +121,9 @@ namespace AnarchyEngine.ECS.Components {
         }
 
         public override void Update() {
-            if (IsStatic) return;
-            // Body.Update();
+            if (Body.IsStaticOrInactive) return;
 
-            var transform = Entity.Get<Transform>();
+            var transform = Entity.QuickGet<Transform>();
             transform.SetPositionSilently(Body.Position);
             
             JMatrix m = Body.Orientation;
@@ -133,7 +132,7 @@ namespace AnarchyEngine.ECS.Components {
                 m.M12, m.M22, m.M32,
                 m.M13, m.M23, m.M33);
             Quaternion.FromMatrix(ref rotation, out Quaternion result);
-            transform.SetRotationSilently(result);
+            transform.SetRotationSilently(in result);
         }
 
         public override void AppendTo(Entity e) {

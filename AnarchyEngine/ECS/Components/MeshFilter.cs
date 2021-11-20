@@ -4,7 +4,7 @@ using AnarchyEngine.Rendering.Mesh;
 using AnarchyEngine.Rendering.Shaders;
 
 namespace AnarchyEngine.ECS.Components {
-    [ComponentMeta(ComponentId.Collider, RegisterAs=typeof(Collider))]
+    [ComponentMeta(ComponentId.Collider)]
     [RequireComponents(typeof(Transform))]
     public class MeshFilter : Component {
         public Mesh Mesh { get; set; }
@@ -37,7 +37,7 @@ namespace AnarchyEngine.ECS.Components {
 
         public override void Render() {
             Mesh.Render();
-            Renderer.Push(Material, Mesh.VertexArray, (OpenTK.Matrix4)Entity.Get<Transform>());
+            Renderer.Push(Material, Mesh.VertexArray, (OpenTK.Matrix4)Entity.QuickGet<Transform>());
             Renderer.Submit();
         }
     }

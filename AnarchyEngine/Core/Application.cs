@@ -90,6 +90,7 @@ namespace AnarchyEngine.Core {
         }
 
         public virtual void Render() {
+            Renderer.PreRender();
             Renderer.Start();
             World.Render();
             Renderer.Finish();

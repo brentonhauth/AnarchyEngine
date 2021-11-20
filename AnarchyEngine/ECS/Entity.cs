@@ -41,30 +41,66 @@ namespace AnarchyEngine.ECS {
 
         public T Get<T>() where T : Component {
             ComponentHelper.Assert<T>();
+            /*var registerAs = ComponentHelper.GetRegisterAs<T>();
+            if (registerAs != null) {
+                return registerAs.CallGet<T>(Handle);
+            }
+            return Handle.Get<T>();*/
+
+            return ComponentHelper.CallGet<T>(Handle);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal T QuickGet<T>() where T : Component {
             return Handle.Get<T>();
         }
 
         public T Add<T>() where T : Component {
             ComponentHelper.Assert<T>();
-            if (!ComponentHelper.AllowMultiple<T>() && Handle.Has<T>()) {
+            /*if (!ComponentHelper.AllowMultiple<T>() && Handle.Has<T>()) {
                 throw new Exception($"Already has a component of type {typeof(T).Name}");
             }
-            //if (typeof(T).Ba)
             T component = Activator.CreateInstance<T>();
             component.AppendTo(this);
             Events.RaiseAddedComponent(component);
-            Handle.Set(component);
+            var registerAs = ComponentHelper.GetRegisterAs<T>();
+            if (registerAs != null) {
+                registerAs.CallSet(Handle, component);
+            } else {
+                Handle.Set(component);
+            }
+            return component;*/
+
+            T component = Activator.CreateInstance<T>();
+            ComponentHelper.CallSet(Handle, component);
+            component.AppendTo(this);
+            Events.RaiseAddedComponent(component);
             return component;
         }
 
         public bool Has<T>() where T : Component {
             ComponentHelper.Assert<T>();
-            return Handle.Has<T>();
+            return ComponentHelper.CallHas<T>(Handle);
+            /*var registerAs = ComponentHelper.GetRegisterAs<T>();
+            if (registerAs != null) {
+                return registerAs.CallHas(Handle);
+            }
+            return Handle.Has<T>();*/
         }
         public bool Has<T>(out T component) where T : Component {
             ComponentHelper.Assert<T>();
-            component = Handle.Has<T>() ? Handle.Get<T>() : null;
-            return component;
+            try {
+                component = ComponentHelper.CallGet<T>(Handle);
+                return true;
+            } catch (Exception) {
+                component = default;
+                return false;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal bool QuickHas<T>() where T : Component {
+            return Handle.Has<T>();
         }
 
         public bool IsEnabled() => Handle.IsEnabled();
